@@ -1,34 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
+/** Hosts the router only: the shell is a route (`AppLayout`), so full-page routes can sit beside it. */
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <header>weeljack-admin</header>
-    <main>
-      <router-outlet />
-    </main>
-    <footer>Released under the MIT licence.</footer>
-  `,
-  styles: `
-    :host {
-      display: block;
-    }
-
-    header,
-    main,
-    footer {
-      box-sizing: border-box;
-      max-width: 70ch;
-      margin-inline: auto;
-      padding: 16px;
-    }
-
-    main {
-      padding-block: 32px;
-    }
-  `,
+  template: '<router-outlet />',
 })
 export class App {}

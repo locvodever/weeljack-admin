@@ -1,0 +1,69 @@
+<div class="bar">
+  <div class="start">
+    <wj-button
+      ariaLabel="Menu"
+      [ariaExpanded]="layout.menuExpanded()"
+      [ariaHasPopup]="layout.usesDrawer() ? 'dialog' : undefined"
+      [pt]="menuPt()"
+      (click)="layout.toggleMenu()"
+    >
+      <wj-icon [icon]="icons.menu" />
+    </wj-button>
+    <a class="wordmark" routerLink="/">weeljack-admin</a>
+  </div>
+
+  <div class="end">
+    <wj-button class="wide" ariaLabel="Dark mode" [pt]="darkPt()" (click)="layout.toggleScheme()">
+      <wj-icon [icon]="layout.scheme() === 'dark' ? icons.sun : icons.moon" />
+    </wj-button>
+    <wj-button
+      #themeButton
+      class="wide"
+      ariaLabel="Theme settings"
+      ariaHasPopup="dialog"
+      [ariaExpanded]="configuratorOpen()"
+      (click)="toggleTheme($event)"
+    >
+      <!-- Lucide "palette" (ISC, Lucide Contributors, https://lucide.dev/icons/palette); see ASSETS.md. -->
+      <svg
+        class="palette"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"
+        />
+        <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+        <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+        <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+        <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+      </svg>
+    </wj-button>
+
+    <wj-button
+      #overflowButton
+      class="narrow"
+      ariaLabel="More actions"
+      ariaHasPopup="menu"
+      [ariaExpanded]="overflowOpen()"
+      (click)="overflow.toggle($event)"
+    >
+      <wj-icon [icon]="icons.overflow" />
+    </wj-button>
+    <wj-menu
+      #overflow
+      popup
+      ariaLabel="More actions"
+      [model]="overflowItems()"
+      (opened)="overflowOpen.set(true)"
+      (closed)="overflowClosed()"
+    />
+  </div>
+</div>
+<ng-container #configurator />

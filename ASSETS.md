@@ -9,9 +9,8 @@ Sakai, Sparked or PrimeTek's demo set (see [ADR 0001](docs/adr/0001-rebuild-neve
 
 | File | Source | Licence | Author |
 |---|---|---|---|
+| `src/app/layout/topbar/topbar.html` (inline SVG, the configurator button's `palette` icon) | [Lucide `palette`](https://lucide.dev/icons/palette) | ISC | Lucide Contributors |
 
-No art files yet.
-
-**Planned:** the configurator's `palette` icon and the dashboard's `inbox` and `message-circle` icons are inline
-[Lucide](https://lucide.dev) SVGs, kept in the template rather than in WeeljackNg's icon set. Each gets a row here,
-with the ISC licence and "Lucide Contributors", in the step that adds it.
+**Planned:** the dashboard's `inbox` and `message-circle` icons are inline [Lucide](https://lucide.dev) SVGs too, kept
+in the template rather than in WeeljackNg's icon set. Each gets a row here, with the ISC licence and "Lucide
+Contributors", in the step that adds it.

@@ -1,0 +1,95 @@
+.panel {
+  box-sizing: border-box;
+  inline-size: min(22rem, 100vw - 2rem);
+  max-block-size: calc(100dvh - 6rem);
+  overflow-y: auto;
+  color: var(--wj-text-color);
+}
+
+.title {
+  margin: 0 0 16px;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.row {
+  min-inline-size: 0;
+  margin: 0 0 24px;
+  padding: 0;
+  border: 0;
+}
+
+.row:last-child {
+  margin-block-end: 0;
+}
+
+.legend {
+  display: block;
+  margin-block-end: 8px;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.option {
+  position: relative;
+  display: block;
+  max-inline-size: 100%;
+}
+
+/* The native radio covers its label, so the whole 44 px pill is the target and carries the focus. */
+.radio {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.option-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-block-size: 44px;
+  padding: 4px 16px;
+  border: 1px solid var(--wj-surface-500);
+  border-radius: 22px;
+  font-size: 0.875rem;
+  pointer-events: none;
+  transition: box-shadow var(--shell-motion) ease-out;
+}
+
+/* The radio dot: an empty circle, filled when checked, so checked is shape and not hue alone. */
+.option-text::before {
+  content: '';
+  flex: none;
+  box-sizing: border-box;
+  inline-size: 12px;
+  block-size: 12px;
+  border: 1px solid currentcolor;
+  border-radius: 50%;
+}
+
+.radio:checked + .option-text {
+  box-shadow:
+    0 0 0 2px var(--wj-content-background),
+    0 0 0 4px var(--wj-text-color);
+}
+
+.radio:checked + .option-text::before {
+  background: currentcolor;
+}
+
+.radio:focus-visible + .option-text {
+  outline: var(--wj-focus-ring-width) var(--wj-focus-ring-style) var(--wj-focus-ring-color);
+  outline-offset: 5px;
+}
