@@ -22,6 +22,13 @@ export const routes: Routes = [
       },
     ],
   },
+  // Before the full pages: their parent route ends in `**`, which would swallow `/landing`. Not nested
+  // in `FullPage` either, so the landing keeps its own banner and contentinfo landmarks.
+  {
+    path: 'landing',
+    title: 'Landing - weeljack-admin',
+    loadComponent: () => import('./pages/landing/landing').then((m) => m.Landing),
+  },
   // The full pages: no sidebar or top bar, but the same `LayoutService`, so the stored look holds.
   {
     path: '',

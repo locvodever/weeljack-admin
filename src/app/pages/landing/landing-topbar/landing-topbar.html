@@ -1,0 +1,35 @@
+<div class="bar">
+  <a class="wordmark" routerLink="/">weeljack-admin</a>
+  <button
+    #toggleButton
+    type="button"
+    class="toggle"
+    aria-controls="landing-menu"
+    [attr.aria-expanded]="open()"
+    (click)="toggle()"
+  >
+    <wj-icon [icon]="open() ? icons.close : icons.menu" />
+    <span>Menu</span>
+  </button>
+  <div id="landing-menu" class="menu" [class.open]="open()">
+    <nav aria-label="Sections">
+      <ul class="sections">
+        @for (section of sections; track section.fragment) {
+          <li>
+            <a
+              class="section-link"
+              routerLink="/landing"
+              [fragment]="section.fragment"
+              (click)="close()"
+              >{{ section.label }}</a
+            >
+          </li>
+        }
+      </ul>
+    </nav>
+    <div class="actions">
+      <a class="link-button outlined" routerLink="/auth/login" (click)="close()">Login</a>
+      <a class="link-button" routerLink="/" (click)="close()">View the dashboard</a>
+    </div>
+  </div>
+</div>

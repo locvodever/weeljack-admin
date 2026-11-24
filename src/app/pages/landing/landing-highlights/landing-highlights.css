@@ -1,0 +1,84 @@
+:host {
+  display: block;
+}
+
+.band {
+  outline: none;
+}
+
+.inner {
+  box-sizing: border-box;
+  max-inline-size: 72rem;
+  margin-inline: auto;
+  padding: 48px 16px;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.intro {
+  margin: 0 0 32px;
+  color: var(--wj-text-muted-color);
+}
+
+.row {
+  display: grid;
+  gap: 24px;
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.row + .row {
+  margin-block-start: 48px;
+}
+
+h3 {
+  margin: 0 0 8px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+p {
+  margin: 0 0 12px;
+}
+
+ul {
+  margin: 0;
+  padding-inline-start: 20px;
+  color: var(--wj-text-muted-color);
+}
+
+li + li {
+  margin-block-start: 4px;
+}
+
+.art {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 28rem;
+  block-size: auto;
+  margin-inline: auto;
+}
+
+@media (min-width: 720px) {
+  .inner {
+    padding: 64px 24px;
+  }
+}
+
+@media (min-width: 960px) {
+  .row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 48px;
+  }
+
+  /* The second row puts its art on the left. */
+  .row:nth-of-type(even) .art {
+    order: -1;
+  }
+}

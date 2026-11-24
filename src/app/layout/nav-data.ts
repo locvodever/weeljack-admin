@@ -3,6 +3,7 @@ import {
   wjIconCircleQuestionMark,
   wjIconFile,
   wjIconLayoutDashboard,
+  wjIconLayoutGrid,
   wjIconLock,
   wjIconLogIn,
   wjIconTicket,
@@ -25,7 +26,7 @@ export interface NavGroup {
 
 /**
  * The sidebar tree. A link is listed only once its route exists, and a group with no links is not
- * rendered. "Pages" holds the full pages and the empty page; the landing page joins it with T5.
+ * rendered. "Pages" holds the full pages and the empty page; the landing page is listed first.
  */
 export const NAV_GROUPS: readonly NavGroup[] = [
   {
@@ -42,6 +43,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'pages',
     label: 'Pages',
     links: [
+      { label: 'Landing', path: '/landing', icon: wjIconLayoutGrid },
       { label: 'Login', path: '/auth/login', icon: wjIconLogIn },
       { label: 'Error', path: '/auth/error', icon: wjIconCircleExclamationPoint },
       { label: 'Access denied', path: '/auth/access', icon: wjIconLock },

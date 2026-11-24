@@ -1,0 +1,128 @@
+:host {
+  display: block;
+  border-block-end: 1px solid var(--wj-content-border-color);
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  box-sizing: border-box;
+  max-inline-size: 72rem;
+  min-block-size: 64px;
+  margin-inline: auto;
+  padding: 8px 16px;
+}
+
+.wordmark,
+.section-link {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-block-size: 44px;
+  padding-inline: 8px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.wordmark {
+  color: var(--wj-primary-color);
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.section-link {
+  color: var(--wj-text-color);
+  font-weight: 500;
+}
+
+.section-link:hover {
+  color: var(--wj-primary-color);
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-block-size: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--wj-content-border-color);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--wj-text-color);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toggle:focus-visible {
+  outline: var(--wj-focus-ring-width) var(--wj-focus-ring-style) var(--wj-focus-ring-color);
+  outline-offset: var(--wj-focus-ring-offset);
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sections li,
+.sections a {
+  display: flex;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Below 960 px the links and both actions fold into a panel under the bar, in the page flow. */
+@media (max-width: 959.98px) {
+  .menu {
+    display: none;
+    flex-basis: 100%;
+    padding-block: 8px 16px;
+  }
+
+  .menu.open {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .actions .link-button {
+    inline-size: 100%;
+  }
+}
+
+@media (min-width: 960px) {
+  .toggle {
+    display: none;
+  }
+
+  .menu {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-inline-start: 16px;
+  }
+
+  .sections {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .actions {
+    flex-direction: row;
+    gap: 12px;
+  }
+}
