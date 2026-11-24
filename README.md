@@ -25,18 +25,18 @@ npm run check   # the gate: lint, typecheck, test, build, a11y, licences
 | `npm run check:licences` | Fails on a production dependency outside the licence allow-list |
 | `npm run check` | All of the above, in order, failing fast |
 
-The app has its shell and a placeholder home page. The pages below arrive in later steps.
+The app has its shell and the dashboard. The pages below arrive in later steps.
 
 ## What is here
 
 - An app shell with a skip link, a top bar, a sidebar (docked from 960 px, a drawer below) and a footer.
 - A theme configurator: preset, surface, light or dark, and a Static or Overlay menu. Choices apply at once and are
   remembered in the browser. Police is the default preset, and the first visit follows your OS light or dark setting.
+- A dashboard at `/`: stat cards, recent tickets, agent workload, a stacked bar chart of tickets by status per week
+  (Chart.js, themed from the active preset, with a "Show data table" alternative), and an activity feed.
 
 ## What it will include
 
-- A dashboard with stat cards, recent tickets, agent workload, a chart with a data-table alternative, and an activity
-  feed.
 - A tickets page with create, edit, delete and CSV export.
 - Login, error, access-denied, not-found and empty pages, and a landing page.
 

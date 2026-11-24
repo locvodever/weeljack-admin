@@ -1,0 +1,46 @@
+<section aria-labelledby="stats-title">
+  <h2 id="stats-title" class="sr-only">Today at a glance</h2>
+  <ul class="stats">
+    @for (stat of stats(); track stat.id) {
+      <li class="card stat">
+        <span class="tile" aria-hidden="true">
+          @switch (stat.id) {
+            @case ('open') {
+              <!-- Lucide "inbox" (ISC, Lucide Contributors, https://lucide.dev/icons/inbox); see ASSETS.md. -->
+              <svg
+                class="inbox"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+                <path
+                  d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"
+                />
+              </svg>
+            }
+            @case ('sla') {
+              <wj-icon [icon]="icons.sla" />
+            }
+            @case ('response') {
+              <wj-icon [icon]="icons.response" />
+            }
+            @case ('csat') {
+              <wj-icon [icon]="icons.csat" />
+            }
+          }
+        </span>
+        <div class="text">
+          <p class="label">{{ stat.label }}</p>
+          <p class="value">{{ stat.value }}</p>
+          <p class="delta">{{ stat.delta }}</p>
+        </div>
+      </li>
+    }
+  </ul>
+</section>

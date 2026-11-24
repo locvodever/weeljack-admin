@@ -1,0 +1,30 @@
+<section aria-labelledby="feed-title">
+  <h2 id="feed-title" class="widget-title">Activity</h2>
+  @for (group of groups(); track group.name) {
+    <h3 class="group">{{ group.name }}</h3>
+    <ul class="items">
+      @for (item of group.items; track item.id) {
+        <li class="item">
+          <!-- Lucide "message-circle" (ISC, Lucide Contributors, https://lucide.dev/icons/message-circle); see ASSETS.md. -->
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+          </svg>
+          <div class="body">
+            <p class="text">{{ item.text }}</p>
+            <p class="time">{{ relativeTime(item.at) }}</p>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

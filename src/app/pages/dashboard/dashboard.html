@@ -1,0 +1,10 @@
+<h1>Dashboard</h1>
+<div class="page">
+  <app-stat-cards [stats]="stats" />
+  <div class="panels">
+    <app-recent-tickets [tickets]="recent" />
+    <app-status-chart [status]="weekly" />
+    <app-agent-workload [workload]="workload" />
+    <app-activity-feed [groups]="activity" />
+  </div>
+</div>
