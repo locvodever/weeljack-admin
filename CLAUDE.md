@@ -19,8 +19,8 @@ The demo is a fictional service desk with made-up data. The default look is the 
 parentheses below is a ticket there (`questions/NN-*.md`), and nothing here is re-decided in code. `docs/adr/` holds
 only the choices that are hard to reverse (27). Read ADR 0001 before adding any code, art or copy.
 
-**Status.** The seed commit holds this file, the licence and ADR 0001. Step T0, the walking skeleton, adds the
-Angular app, `npm run check`, CI and Pages. Until it lands, none of the commands below exist.
+**Status.** The seed commit holds this file, the licence and ADR 0001. Step T0, the walking skeleton, has landed: the
+Angular app, `npm run check`, CI and Pages workflow now exist, and the commands below work.
 
 ## 2. Rebuild, never copy (18, 17, ADR 0001)
 
@@ -45,7 +45,7 @@ Angular app, `npm run check`, CI and Pages. Until it lands, none of the commands
 
 ## 4. Commands and definition of done (28, 29)
 
-T0 creates these:
+T0 created these:
 
 | Command | What it does |
 |---|---|
@@ -53,6 +53,10 @@ T0 creates these:
 | `npm start` | Dev server on 4200 |
 | `npm test` / `npm run test:watch` | Vitest browser mode (Chromium) |
 | `npm run lint` / `format` | `eslint . --max-warnings 0 && prettier --check .` / `prettier --write .` |
+| `npm run typecheck` | `ngc --noEmit` over the app and spec configs (strict types and templates) |
+| `npm run build` | Production build, prerendered to `dist/weeljack-admin/browser` |
+| `npm run check:a11y` | axe `wcag22aa` on every prerendered route, 1440 × 900 and 390 × 844, light and dark |
+| `npm run check:licences` | Licence allow-list test, then the check over the production dependencies |
 | `npm run check` | **The gate**, failing fast: lint → typecheck → test → build (prerender) → `check:a11y` → `check:licences` |
 
 - Never run `npm ci`, `npm install` or `setup` inside a worktree (29 Q4).
