@@ -52,7 +52,7 @@ a:focus-visible {
   box-sizing: border-box;
   padding: 24px;
   border: 1px solid var(--wj-content-border-color);
-  border-radius: 12px;
+  border-radius: var(--wj-content-border-radius);
   background: var(--wj-content-background);
   color: var(--wj-text-color);
 }
@@ -66,7 +66,7 @@ a:focus-visible {
   min-block-size: 44px;
   padding: 8px 16px;
   border: 1px solid var(--wj-primary-color);
-  border-radius: 8px;
+  border-radius: var(--wj-button-border-radius);
   background: var(--wj-primary-color);
   color: var(--wj-primary-contrast-color);
   font-weight: 600;
@@ -97,7 +97,7 @@ a:focus-visible {
   inline-size: 100%;
   padding: 24px;
   border: 1px solid var(--wj-content-border-color);
-  border-radius: var(--wj-border-radius-lg, 12px);
+  border-radius: var(--wj-content-border-radius);
   background: var(--wj-content-background);
   color: var(--wj-text-color);
 }

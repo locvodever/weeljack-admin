@@ -13,9 +13,33 @@
   outline-offset: var(--wj-focus-ring-offset);
 }
 
+/* The heading and a link to every ticket share a row; the link wraps under the heading when the row is narrow. */
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  column-gap: 16px;
+}
+
+/*
+ * A 44 px target, like the ticket links, around a 24 px line of text: the box grows 10 px above and below
+ * the text, and the margins give that back, so the row and the gap above the table keep their height.
+ */
+.all-link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  margin-block: -10px 6px;
+  color: var(--wj-primary-color);
+  font-weight: 600;
+}
+
+/* The page breaks long words anywhere; in a table that splits headers letter by letter, so cells wrap at spaces only. */
 wj-table {
   display: block;
   min-inline-size: 36rem;
+  overflow-wrap: normal;
 }
 
 wj-tag {

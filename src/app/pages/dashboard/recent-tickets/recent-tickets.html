@@ -1,5 +1,8 @@
 <section aria-labelledby="recent-title">
-  <h2 id="recent-title" class="widget-title">Recent tickets</h2>
+  <div class="head">
+    <h2 id="recent-title" class="widget-title">Recent tickets</h2>
+    <a class="all-link" routerLink="/tickets">View all tickets</a>
+  </div>
   <div class="scroll" role="region" tabindex="0" aria-labelledby="recent-title">
     <wj-table [value]="tickets()" dataKey="id" ariaLabelledBy="recent-title">
       <wj-column field="id" header="Ticket">

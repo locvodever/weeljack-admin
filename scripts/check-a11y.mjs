@@ -7,6 +7,14 @@
 // The landing page's section links are also checked by href: each topbar link must resolve to
 // .../weeljack-admin/landing#features, #highlights and #pricing in the browser, and the prerendered
 // landing/index.html must hold the same three hrefs (the JavaScript-off path).
+// Layout assertions count in the same total, so the gate fails on them too: on /tickets at 1440 x 900
+// (sidebar docked) the table has no horizontal overflow and the first row's Edit and Delete are in view;
+// at 390 x 844 exactly one element scrolls sideways, it is the focusable region named "Ticket list", the
+// first row's actions are in view and the pager does not overflow; on /empty at 1440 x 900 the docked
+// sidebar reaches the bottom of the viewport; on / at 1440 x 900 no recent-tickets header breaks inside
+// a word; and with the main bundle blocked the scheme-init script alone puts the dark class on <html>
+// for a dark OS on /, /tickets, /landing, /auth/login and the unknown URL, and leaves it off when the
+// stored scheme is light.
 // Serves dist/weeljack-admin/browser under /weeljack-admin/ with a built-in http server, so the audit
 // sees exactly what GitHub Pages serves: an unknown path is answered with status 404 and the body of
 // 404.html (the run fails when 404.html is missing). One unknown, nested URL is audited at both sizes
@@ -43,6 +51,9 @@ async function settle(page, dialog) {
 
 const LANDING = `${BASE}landing`;
 const LANDING_SECTIONS = ['features', 'highlights', 'pricing'];
+const TICKETS = `${BASE}tickets`;
+// The key LayoutService stores the layout under; scripts/scheme-init.test.mjs keeps it in step with the code.
+const LAYOUT_STORAGE_KEY = 'weeljack-admin:layout';
 
 const STATES = [
   {
@@ -305,6 +316,201 @@ async function landingLinkProblems(browser, origin) {
   return problems;
 }
 
+// Runs `check` on a fresh page of one route at one size and scheme and returns its problems. `block`
+// aborts the main bundle (so only what the HTML itself does is seen); `storedScheme` is written to
+// localStorage before any script runs. Console errors are not collected: an aborted bundle logs them.
+async function layoutCheck(browser, origin, route, size, check, options = {}) {
+  const context = await browser.newContext({
+    viewport: { width: size.width, height: size.height },
+    colorScheme: options.scheme ?? 'light',
+  });
+  try {
+    const page = await context.newPage();
+    if (options.block) await page.route('**/main-*.js', (request) => request.abort());
+    if (options.storedScheme) {
+      await page.addInitScript(
+        ([key, scheme]) => localStorage.setItem(key, JSON.stringify({ scheme })),
+        [LAYOUT_STORAGE_KEY, options.storedScheme],
+      );
+    }
+    await page.goto(`${origin}${route}`, { waitUntil: 'load' });
+    await page.waitForLoadState('networkidle');
+    return await check(page);
+  } catch (error) {
+    return [`could not run the check: ${String(error.message).split(/\r?\n/, 1)[0]}`];
+  } finally {
+    await context.close();
+  }
+}
+
+// Runs in the page: what scrolls sideways, and where the first row's actions and the pager are.
+function ticketsLayout() {
+  const named = document.querySelectorAll('[role="region"][aria-label="Ticket list"]');
+  const region = named[0];
+  const scrollers = [...document.querySelectorAll('body *')].filter((element) => {
+    const overflow = getComputedStyle(element).overflowX;
+    return (
+      (overflow === 'auto' || overflow === 'scroll') && element.scrollWidth > element.clientWidth
+    );
+  });
+  const box = (element) => {
+    const { left, right } = element.getBoundingClientRect();
+    return { left, right };
+  };
+  const pager = document.querySelector('p-paginator');
+  return {
+    viewport: innerWidth,
+    regions: named.length,
+    region: region && {
+      tabindex: region.getAttribute('tabindex'),
+      scrollWidth: region.scrollWidth,
+      clientWidth: region.clientWidth,
+      ...box(region),
+    },
+    scrollers: scrollers.map((element) => {
+      const name = element.getAttribute('aria-label');
+      return `${element.tagName.toLowerCase()}${name ? ` "${name}"` : ''}`;
+    }),
+    actions: [...document.querySelectorAll('tbody tr:first-child td button')].map((button) => ({
+      name: button.getAttribute('aria-label'),
+      ...box(button),
+    })),
+    pager: pager && {
+      scrollWidth: pager.scrollWidth,
+      clientWidth: pager.clientWidth,
+      ...box(pager),
+    },
+  };
+}
+
+function inside(item, outer) {
+  return item.left >= outer.left - 0.5 && item.right <= outer.right + 0.5;
+}
+
+function ticketsProblems(layout, { narrow }) {
+  if (layout.regions !== 1 || !layout.region) {
+    return [`expected one region named "Ticket list", found ${layout.regions}`];
+  }
+  const problems = [];
+  if (layout.region.tabindex !== '0') problems.push('the "Ticket list" region is not focusable');
+  if (layout.actions.length !== 2) {
+    problems.push(`expected 2 actions in the first row, found ${layout.actions.length}`);
+  }
+  const view = { left: 0, right: layout.viewport };
+  for (const action of layout.actions) {
+    if (!inside(action, view) || !inside(action, layout.region)) {
+      problems.push(`"${action.name}" is outside the viewport or the scroller`);
+    }
+  }
+  if (!narrow) {
+    if (layout.region.scrollWidth > layout.region.clientWidth) {
+      problems.push(
+        `the table scrolls sideways (${layout.region.scrollWidth} px needed, ${layout.region.clientWidth} px available)`,
+      );
+    }
+    return problems;
+  }
+  if (layout.scrollers.length !== 1 || !layout.scrollers[0].includes('"Ticket list"')) {
+    problems.push(
+      `expected only the "Ticket list" region to scroll sideways, found: ${layout.scrollers.join(', ') || 'nothing'}`,
+    );
+  }
+  if (!layout.pager) {
+    problems.push('the pager was not found');
+  } else if (layout.pager.scrollWidth > layout.pager.clientWidth || !inside(layout.pager, view)) {
+    problems.push('the pager overflows');
+  }
+  return problems;
+}
+
+// Layout rows as [name, problems]. Each row counts as one combination and its problems as violations.
+async function layoutRows(browser, origin) {
+  const rows = [];
+  const add = async (name, run) => rows.push([name, await run()]);
+
+  await add('tickets table fits 1440x900 docked', () =>
+    layoutCheck(browser, origin, TICKETS, SIZES[0], async (page) =>
+      ticketsProblems(await page.evaluate(ticketsLayout), { narrow: false }),
+    ),
+  );
+  await add('tickets one scroller 390x844', () =>
+    layoutCheck(browser, origin, TICKETS, SIZES[1], async (page) =>
+      ticketsProblems(await page.evaluate(ticketsLayout), { narrow: true }),
+    ),
+  );
+  await add('docked sidebar reaches the viewport bottom 1440x900', () =>
+    layoutCheck(browser, origin, `${BASE}empty`, SIZES[0], async (page) => {
+      const edge = await page.evaluate(() => {
+        const side = document.querySelector('app-sidebar.side');
+        return {
+          bottom: side?.getBoundingClientRect().bottom,
+          viewport: innerHeight,
+          shown: side !== null,
+        };
+      });
+      if (!edge.shown) return ['the docked sidebar is not on the page'];
+      return Math.abs(edge.bottom - edge.viewport) <= 1
+        ? []
+        : [`the sidebar ends at ${edge.bottom} px, the viewport at ${edge.viewport} px`];
+    }),
+  );
+  await add('recent tickets headers stay on one line 1440x900', () =>
+    layoutCheck(browser, origin, BASE, SIZES[0], async (page) => {
+      // Each header is one word, so more than one line of text is a break inside a word.
+      const { found, broken } = await page.evaluate(() => {
+        const cells = [...document.querySelectorAll('app-recent-tickets th')];
+        // The tops of the text's own line boxes (not of the elements around it).
+        const lines = (cell) => {
+          const tops = new Set();
+          const walker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT);
+          for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            if (!node.textContent.trim()) continue;
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            for (const rect of range.getClientRects()) tops.add(Math.round(rect.top));
+          }
+          return tops.size;
+        };
+        return {
+          found: cells.length,
+          broken: cells.filter((cell) => lines(cell) > 1).map((cell) => cell.textContent.trim()),
+        };
+      });
+      if (found === 0) return ['no recent-tickets header cells were found'];
+      return broken.map((name) => `the "${name}" header breaks across lines`);
+    }),
+  );
+  // The scheme before the bundle: with it blocked, only scheme-init.js can set the class.
+  for (const route of [BASE, TICKETS, LANDING, `${BASE}auth/login`, UNKNOWN_ROUTE]) {
+    for (const [storedScheme, expectDark] of [
+      [undefined, true],
+      ['light', false],
+    ]) {
+      const label = storedScheme ? 'stored light, dark OS: light' : 'dark OS: dark';
+      await add(`first frame, bundle blocked, ${label} ${route}`, () =>
+        layoutCheck(
+          browser,
+          origin,
+          route,
+          SIZES[0],
+          async (page) => {
+            const dark = await page.evaluate(() =>
+              document.documentElement.classList.contains('wj-dark'),
+            );
+            return dark === expectDark
+              ? []
+              : [
+                  `<html> ${dark ? 'has' : 'lacks'} wj-dark, expected ${expectDark ? 'it' : 'none'}`,
+                ];
+          },
+          { block: true, scheme: 'dark', storedScheme },
+        ),
+      );
+    }
+  }
+  return rows;
+}
+
 async function main() {
   const routes = loadRoutes();
   if (routes.length === 0) {
@@ -324,6 +530,7 @@ async function main() {
   let stateCount = 0;
   let unknownCount = 0;
   let linkRows = 0;
+  let layoutCount = 0;
   const failures = [];
   try {
     for (const route of routes) {
@@ -389,15 +596,26 @@ async function main() {
         }
       }
     }
+    // Layout assertions: fit, one scroller, the sidebar's height, header wrapping, the first frame's scheme.
+    for (const [name, problems] of await layoutRows(browser, origin)) {
+      total += problems.length;
+      layoutCount += 1;
+      console.log(`${name}  violations: ${problems.length}`);
+      for (const problem of problems) failures.push(`layout ${name}: ${problem}`);
+    }
   } finally {
     await browser.close();
     await new Promise((done) => server.close(done));
   }
 
   const combinations =
-    routes.length * SIZES.length * SCHEMES.length + stateCount + unknownCount + linkRows;
+    routes.length * SIZES.length * SCHEMES.length +
+    stateCount +
+    unknownCount +
+    linkRows +
+    layoutCount;
   console.log(
-    `check:a11y: ${routes.length} route(s), ${combinations} combination(s) (${stateCount} overlay state(s), ${unknownCount} unknown-URL row(s), ${linkRows} landing link row(s)), ${total} violation(s) in total`,
+    `check:a11y: ${routes.length} route(s), ${combinations} combination(s) (${stateCount} overlay state(s), ${unknownCount} unknown-URL row(s), ${linkRows} landing link row(s), ${layoutCount} layout row(s)), ${total} violation(s) in total`,
   );
   for (const failure of failures) console.error(`  ${failure}`);
   return total === 0 ? 0 : 1;

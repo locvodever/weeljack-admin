@@ -21,7 +21,7 @@ h1 {
   min-inline-size: 0;
   padding: 16px;
   border: 1px solid var(--wj-content-border-color);
-  border-radius: var(--wj-border-radius-lg, 12px);
+  border-radius: var(--wj-content-border-radius);
   background: var(--wj-content-background);
   color: var(--wj-text-color);
 }

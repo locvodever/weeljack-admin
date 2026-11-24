@@ -52,7 +52,7 @@ h2 {
   inline-size: 40px;
   block-size: 40px;
   margin-block-end: 12px;
-  border-radius: 10px;
+  border-radius: var(--wj-content-border-radius);
   background: color-mix(in srgb, var(--wj-primary-color) 14%, var(--wj-content-background));
   color: var(--wj-primary-color);
   font-size: 1.25rem;

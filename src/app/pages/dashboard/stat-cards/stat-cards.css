@@ -36,7 +36,7 @@
   justify-content: center;
   inline-size: 48px;
   block-size: 48px;
-  border-radius: 12px;
+  border-radius: var(--wj-content-border-radius);
   background: var(--wj-highlight-background);
   color: var(--wj-highlight-color);
   font-size: 1.5rem;

@@ -41,13 +41,22 @@ describe('Login', () => {
 
     expect(root.querySelectorAll('h1').length).toBe(1);
     expect(root.querySelector('h1')?.textContent.trim()).toBe('Sign in');
-    expect(root.textContent).toContain('weeljack-admin');
     expect(root.querySelector('.notice')?.textContent.trim()).toBe(
-      'Demo only: nothing is sent or stored',
+      'Demo only: any email address and password will sign you in. Nothing is sent or stored.',
     );
     expect(root.querySelector('.notice')?.getAttribute('role')).toBeNull();
-    expect(root.querySelector('a')).toBeNull();
+    expect(root.querySelectorAll('a').length).toBe(1);
     expect(root.querySelector('form')?.hasAttribute('action')).toBe(false);
+    fixture.destroy();
+  });
+
+  it('makes the wordmark a link named by its text that goes to the app root', async () => {
+    const { fixture, root } = await render();
+
+    const link = root.querySelector<HTMLAnchorElement>('a.wordmark');
+    expect(link?.textContent.trim()).toBe('weeljack-admin');
+    expect(link?.getAttribute('href')).toBe('/');
+    expect(root.querySelector('h1')?.previousElementSibling).toBe(link);
     fixture.destroy();
   });
 
