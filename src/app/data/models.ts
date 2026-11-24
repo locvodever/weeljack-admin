@@ -11,10 +11,15 @@ export interface Ticket {
   readonly status: TicketStatus;
   /** The assigned agent's display name. */
   readonly assignee: string;
+  /** Free text from the ticket form; the mock tickets have none. */
+  readonly description?: string;
   /** ISO 8601 instants, always relative to the demo anchor in `demo-time.ts`. */
   readonly created: string;
   readonly updated: string;
 }
+
+/** What the ticket form edits: a ticket without its id and dates. */
+export type TicketDraft = Omit<Ticket, 'id' | 'created' | 'updated'>;
 
 export interface Agent {
   readonly id: string;

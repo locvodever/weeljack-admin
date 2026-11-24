@@ -25,7 +25,7 @@ npm run check   # the gate: lint, typecheck, test, build, a11y, licences
 | `npm run check:licences` | Fails on a production dependency outside the licence allow-list |
 | `npm run check` | All of the above, in order, failing fast |
 
-The app has its shell and the dashboard. The pages below arrive in later steps.
+The app has its shell, the dashboard and the tickets page. The pages below arrive in later steps.
 
 ## What is here
 
@@ -34,10 +34,14 @@ The app has its shell and the dashboard. The pages below arrive in later steps.
   remembered in the browser. Police is the default preset, and the first visit follows your OS light or dark setting.
 - A dashboard at `/`: stat cards, recent tickets, agent workload, a stacked bar chart of tickets by status per week
   (Chart.js, themed from the active preset, with a "Show data table" alternative), and an activity feed.
+- A tickets page at `/tickets`: search, sortable columns, paging with its own "Showing 1 to 10 of 32" report,
+  multiple selection, a form dialog to create and edit, a confirm before every delete, toasts, and CSV export of the
+  filtered and sorted list (all pages). Edits live in memory and reset on reload. The export quotes every field and
+  neutralises a leading `=`, `+`, `-`, `@`, tab or carriage return with a single quote, so a spreadsheet opens it as
+  text and never runs it as a formula.
 
 ## What it will include
 
-- A tickets page with create, edit, delete and CSV export.
 - Login, error, access-denied, not-found and empty pages, and a landing page.
 
 The demo is a fictional service desk with made-up data. The default look is WeeljackNg's Police preset (`wjPolice`),

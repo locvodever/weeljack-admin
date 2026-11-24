@@ -3,30 +3,8 @@ import { RouterLink } from '@angular/router';
 import { WjAvatar } from 'weeljack-ng/avatar';
 import { WjColumn, WjTable, WjTableCellSlot } from 'weeljack-ng/table';
 import { WjTag } from 'weeljack-ng/tag';
-import {
-  PRIORITY_LABEL,
-  STATUS_LABEL,
-  Ticket,
-  TicketPriority,
-  TicketStatus,
-  initials,
-} from '../../../data/models';
-
-type TagSeverity = 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast';
-
-const PRIORITY_SEVERITY: Readonly<Record<TicketPriority, TagSeverity>> = {
-  low: 'secondary',
-  normal: 'info',
-  high: 'warn',
-  urgent: 'danger',
-};
-
-const STATUS_SEVERITY: Readonly<Record<TicketStatus, TagSeverity>> = {
-  open: 'info',
-  'in-progress': 'warn',
-  waiting: 'secondary',
-  resolved: 'success',
-};
+import { PRIORITY_LABEL, STATUS_LABEL, Ticket, initials } from '../../../data/models';
+import { PRIORITY_SEVERITY, STATUS_SEVERITY } from '../../../data/ticket-tags';
 
 /**
  * The latest tickets as a `wj-table`: each id links to that ticket on the tickets page, the

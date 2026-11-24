@@ -1,0 +1,51 @@
+:host {
+  display: block;
+  min-inline-size: 0;
+}
+
+/* Narrower than the table needs, the region scrolls sideways; it is focusable so a keyboard can scroll it. */
+.scroll {
+  overflow-x: auto;
+}
+
+.scroll:focus-visible {
+  outline: var(--wj-focus-ring-width) var(--wj-focus-ring-style) var(--wj-focus-ring-color);
+  outline-offset: var(--wj-focus-ring-offset);
+}
+
+/* The page breaks long words anywhere; in a table that splits headers letter by letter, so cells wrap at spaces only. */
+wj-table {
+  display: block;
+  min-inline-size: 68rem;
+  overflow-wrap: normal;
+}
+
+wj-tag {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.ticket-id {
+  color: var(--wj-primary-color);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.updated {
+  color: var(--wj-text-muted-color);
+  white-space: nowrap;
+}
+
+/* A long subject is cut with an ellipsis; its full text stays in the cell for assistive technology. */
+.subject {
+  display: block;
+  max-inline-size: 20rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+}

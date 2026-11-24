@@ -10,6 +10,11 @@ export const routes: Routes = [
         title: 'Dashboard - weeljack-admin',
         loadComponent: () => import('./pages/dashboard/dashboard').then((m) => m.Dashboard),
       },
+      {
+        path: 'tickets',
+        title: 'Tickets - weeljack-admin',
+        loadComponent: () => import('./pages/tickets/tickets').then((m) => m.Tickets),
+      },
     ],
   },
 ];

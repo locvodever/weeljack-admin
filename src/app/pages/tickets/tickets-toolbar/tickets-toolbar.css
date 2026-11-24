@@ -1,0 +1,32 @@
+:host {
+  display: block;
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  inline-size: 100%;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.icon {
+  margin-inline-end: 8px;
+}
+
+/* The search takes the rest of the line; below 720 px it drops to a line of its own. */
+.search {
+  display: block;
+  flex: 1 1 16rem;
+  min-inline-size: 0;
+}
+
+.search input {
+  inline-size: 100%;
+}

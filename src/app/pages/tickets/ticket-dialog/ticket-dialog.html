@@ -1,0 +1,68 @@
+<wj-dialog [(visible)]="visible" [header]="heading()" (closed)="closed.emit()">
+  <div class="form">
+    <wj-field label="Subject" hint="A short summary of the problem." [error]="subjectError()">
+      <input
+        #subjectInput
+        wjInputText
+        required
+        autocomplete="off"
+        [ngModel]="subject()"
+        (ngModelChange)="subject.set($event)"
+        (keydown.enter)="submit()"
+      />
+    </wj-field>
+
+    <wj-field label="Description" hint="Optional. What happened, and what has been tried.">
+      <textarea
+        wjTextarea
+        rows="4"
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event)"
+      ></textarea>
+    </wj-field>
+
+    <wj-field label="Requester">
+      <input
+        wjInputText
+        autocomplete="off"
+        [ngModel]="requester()"
+        (ngModelChange)="requester.set($event)"
+        (keydown.enter)="submit()"
+      />
+    </wj-field>
+
+    <wj-field #priorityField label="Priority">
+      <div class="radios" role="radiogroup" [attr.aria-labelledby]="priorityField.labelId">
+        @for (option of priorities; track option.value) {
+          <span class="radio">
+            <wj-radiobutton
+              name="ticket-priority"
+              [inputId]="'ticket-priority-' + option.value"
+              [option]="option.value"
+              [value]="priority()"
+              (valueChange)="setPriority($event)"
+            />
+            <label [for]="'ticket-priority-' + option.value">{{ option.label }}</label>
+          </span>
+        }
+      </div>
+    </wj-field>
+
+    <wj-field label="Status">
+      <wj-select [options]="statusOptions" [value]="status()" (valueChange)="setStatus($event)" />
+    </wj-field>
+
+    <wj-field label="Assignee">
+      <wj-select
+        [options]="assigneeOptions"
+        [value]="assignee()"
+        (valueChange)="setAssignee($event)"
+      />
+    </wj-field>
+  </div>
+
+  <ng-template wjDialogFooter>
+    <wj-button label="Cancel" severity="secondary" variant="outlined" (click)="cancel()" />
+    <wj-button label="Save" (click)="submit()" />
+  </ng-template>
+</wj-dialog>

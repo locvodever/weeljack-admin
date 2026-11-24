@@ -1,0 +1,79 @@
+<div #region class="scroll" role="region" tabindex="0" aria-label="Ticket list">
+  <wj-table
+    [value]="tickets()"
+    dataKey="id"
+    ariaLabel="Tickets"
+    selectionMode="multiple"
+    [(selection)]="selection"
+    [(sortField)]="sortField"
+    [(sortOrder)]="sortOrder"
+    paginator
+    [(first)]="first"
+    [(rows)]="rows"
+    [rowsPerPageOptions]="pageSizes"
+    showCurrentPageReport
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+  >
+    <wj-column field="id" header="Ticket" sortable>
+      <ng-template wjTableCell let-ticket [wjTableCellOf]="tickets()">
+        <span class="ticket-id">{{ ticket.id }}</span>
+      </ng-template>
+    </wj-column>
+    <wj-column field="subject" header="Subject" sortable>
+      <ng-template wjTableCell let-ticket [wjTableCellOf]="tickets()">
+        <span class="subject" [attr.title]="ticket.subject">{{ ticket.subject }}</span>
+      </ng-template>
+    </wj-column>
+    <wj-column field="requester" header="Requester" sortable>
+      <ng-template wjTableCell let-ticket [wjTableCellOf]="tickets()">
+        <wj-avatar
+          [label]="initials(ticket.requester)"
+          shape="circle"
+          [ariaLabel]="ticket.requester"
+        />
+      </ng-template>
+    </wj-column>
+    <wj-column field="priority" header="Priority" sortable>
+      <ng-template wjTableCell let-ticket [wjTableCellOf]="tickets()">
+        <wj-tag
+          [value]="priorityLabel[ticket.priority]"
+          [severity]="prioritySeverity[ticket.priority]"
+        />
+      </ng-template>
+    </wj-column>
+    <wj-column field="status" header="Status" sortable>
+      <ng-template wjTableCell let-ticket [wjTableCellOf]="tickets()">
+        <wj-tag [value]="statusLabel[ticket.status]" [severity]="statusSeverity[ticket.status]" />
+      </ng-template>
+    </wj-column>
+    <wj-column field="assignee" header="Assignee" sortable />
+    <wj-column field="updated" header="Updated" sortable>
+      <ng-template wjTableCell let-ticket [wjTableCellOf]="tickets()">
+        <span class="updated">{{ relativeTime(ticket.updated) }}</span>
+      </ng-template>
+    </wj-column>
+    <wj-column header="Actions">
+      <ng-template wjTableCell let-ticket [wjTableCellOf]="tickets()">
+        <div class="actions">
+          <wj-button
+            [ariaLabel]="'Edit ticket ' + ticket.id"
+            severity="secondary"
+            variant="text"
+            (click)="edit.emit(ticket)"
+          >
+            <wj-icon [icon]="icons.edit" />
+          </wj-button>
+          <wj-button
+            [ariaLabel]="'Delete ticket ' + ticket.id"
+            severity="danger"
+            variant="text"
+            (click)="remove.emit(ticket)"
+          >
+            <wj-icon [icon]="icons.remove" />
+          </wj-button>
+        </div>
+      </ng-template>
+    </wj-column>
+    <ng-template wjTableEmpty>No tickets match</ng-template>
+  </wj-table>
+</div>
