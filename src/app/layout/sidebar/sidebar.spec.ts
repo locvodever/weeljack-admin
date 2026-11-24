@@ -13,6 +13,7 @@ async function setup(url: string) {
       provideRouter([
         { path: '', component: Blank },
         { path: 'elsewhere', component: Blank },
+        { path: 'tickets', component: Blank },
       ]),
     ],
   });
@@ -30,7 +31,7 @@ describe('Sidebar', () => {
 
     expect(root.querySelector('nav')?.getAttribute('aria-label')).toBe('Main');
     const heads = Array.from(root.querySelectorAll('button.head'));
-    expect(heads.map((head) => head.textContent.trim())).toEqual(['Home']);
+    expect(heads.map((head) => head.textContent.trim())).toEqual(['Home', 'Service desk']);
   });
 
   it('opens the group holding the current route and marks the link as the current page', async () => {
@@ -43,6 +44,30 @@ describe('Sidebar', () => {
     const link = root.querySelector('a');
     expect(link?.textContent.trim()).toBe('Dashboard');
     expect(link?.getAttribute('aria-current')).toBe('page');
+  });
+
+  it('lists Tickets under Service desk, with a decorative icon and its label as the name', async () => {
+    const { root } = await setup('/');
+
+    const link = Array.from(root.querySelectorAll('a')).find(
+      (item) => item.textContent.trim() === 'Tickets',
+    );
+    expect(link?.getAttribute('href')).toBe('/tickets');
+    expect(link?.querySelector('wj-icon svg')?.getAttribute('aria-hidden')).toBe('true');
+    expect(link?.hasAttribute('aria-label')).toBe(false);
+  });
+
+  it('marks Tickets as the current page whatever the query, as after a dashboard link', async () => {
+    for (const url of ['/tickets?id=WJ-1032', '/tickets?assignee=Mara%20Okafor']) {
+      const { root } = await setup(url);
+
+      const links = Array.from(root.querySelectorAll('a'));
+      const tickets = links.find((item) => item.textContent.trim() === 'Tickets');
+      const dashboard = links.find((item) => item.textContent.trim() === 'Dashboard');
+      expect(tickets?.getAttribute('aria-current'), url).toBe('page');
+      expect(dashboard?.hasAttribute('aria-current'), url).toBe(false);
+      TestBed.resetTestingModule();
+    }
   });
 
   it('draws the Dashboard icon as a decoration and keeps the label as the link name', async () => {

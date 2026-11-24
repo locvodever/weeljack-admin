@@ -1,4 +1,4 @@
-import { wjIconLayoutDashboard } from 'weeljack-ng/icon';
+import { wjIconLayoutDashboard, wjIconTicket } from 'weeljack-ng/icon';
 import type { WjIconDef } from 'weeljack-ng/icon';
 
 export interface NavLink {
@@ -17,7 +17,7 @@ export interface NavGroup {
 
 /**
  * The sidebar tree. A link is listed only once its route exists, and a group with no links is not
- * rendered, so "Service desk" and "Pages" show up when T2 to T5 add their routes.
+ * rendered, so "Pages" shows up when T4 and T5 add their routes.
  */
 export const NAV_GROUPS: readonly NavGroup[] = [
   {
@@ -25,6 +25,10 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     label: 'Home',
     links: [{ label: 'Dashboard', path: '/', icon: wjIconLayoutDashboard }],
   },
-  { id: 'service-desk', label: 'Service desk', links: [] },
+  {
+    id: 'service-desk',
+    label: 'Service desk',
+    links: [{ label: 'Tickets', path: '/tickets', icon: wjIconTicket }],
+  },
   { id: 'pages', label: 'Pages', links: [] },
 ];

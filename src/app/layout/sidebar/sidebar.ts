@@ -8,7 +8,13 @@ import {
   signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  IsActiveMatchOptions,
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
 import { filter, map } from 'rxjs';
 import { WjIcon } from 'weeljack-ng/icon';
 import { NAV_GROUPS, NavGroup } from '../nav-data';
@@ -45,6 +51,17 @@ export class Sidebar {
   private readonly manual = signal<ReadonlyMap<string, boolean>>(new Map());
 
   protected readonly groups = NAV_GROUPS.filter((group) => group.links.length > 0);
+
+  /**
+   * A link is the current page when its path matches exactly, whatever the query: the dashboard's
+   * `/tickets?id=…` and `/tickets?assignee=…` links still mark Tickets as current.
+   */
+  protected readonly activeOptions: IsActiveMatchOptions = {
+    paths: 'exact',
+    queryParams: 'ignored',
+    matrixParams: 'ignored',
+    fragment: 'ignored',
+  };
 
   protected readonly openIds = computed(() => {
     const manual = this.manual();

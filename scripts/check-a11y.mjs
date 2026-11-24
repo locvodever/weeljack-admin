@@ -1,6 +1,8 @@
 // Audits every prerendered route with axe (WCAG 2.2 AA) at two sizes in light and dark (28 Q3), plus
 // what the pages open: the menu drawer open at 390 x 844, the configurator open at 1440 x 900, the
-// dashboard's first agent menu open at 1440 x 900 and its chart's data table shown at both sizes.
+// dashboard's first agent menu open at 1440 x 900, its chart's data table shown at both sizes and, on
+// the tickets page at both sizes, the New ticket dialog open, a row's delete confirm open and the
+// "deleted" toast on screen.
 // Serves dist/weeljack-admin/browser under /weeljack-admin/ with a built-in http server, so the audit
 // sees exactly what GitHub Pages serves. Any violation, missing CSP tag, CSP violation, request
 // outside the local server, or empty route list fails the run.
@@ -70,6 +72,42 @@ const STATES = [
       await settle(page, page.getByRole('table', { name: /Tickets by status/ }));
     },
   })),
+  ...SIZES.flatMap((size) => [
+    {
+      name: 'ticket-dialog-open',
+      size,
+      routes: [`${BASE}tickets`],
+      async prepare(page) {
+        await page.getByRole('button', { name: 'New', exact: true }).click();
+        await settle(page, page.getByRole('dialog', { name: 'New ticket' }));
+      },
+    },
+    {
+      name: 'delete-confirm-open',
+      size,
+      routes: [`${BASE}tickets`],
+      async prepare(page) {
+        await page.getByRole('button', { name: 'Delete ticket WJ-1032' }).click();
+        await settle(page, page.getByRole('alertdialog', { name: 'Delete tickets' }));
+      },
+    },
+    {
+      name: 'toast-shown',
+      size,
+      routes: [`${BASE}tickets`],
+      async prepare(page) {
+        await page.getByRole('button', { name: 'Delete ticket WJ-1032' }).click();
+        const confirm = page.getByRole('alertdialog', { name: 'Delete tickets' });
+        await settle(page, confirm);
+        await confirm.getByRole('button', { name: 'Delete', exact: true }).click();
+        const toast = page.getByText('Ticket WJ-1032 deleted');
+        await toast.waitFor({ state: 'visible' });
+        // A hovered toast keeps its place: pointing at it stops its 3 s timer, so axe sees it.
+        await toast.hover();
+        await settle(page, toast);
+      },
+    },
+  ]),
 ];
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
