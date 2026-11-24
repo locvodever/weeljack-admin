@@ -2,8 +2,31 @@
 
 A free admin-app template for Angular, built on [WeeljackNg](https://github.com/locvodever/weeljack-ng).
 
-> **Status: seed only.** This commit holds the licence and the rules. The app arrives with the first build step,
-> the walking skeleton, so there is nothing to run yet.
+## Getting started
+
+Needs Node 24.15+ or 26 (`.nvmrc` pins 26).
+
+```sh
+npm run setup   # main checkout only: npm ci + Playwright Chromium
+npm start       # dev server on http://localhost:4200
+npm test        # Vitest browser mode (Chromium), single run
+npm run check   # the gate: lint, typecheck, test, build, a11y, licences
+```
+
+| Command | What it does |
+|---|---|
+| `npm run setup` | `npm ci` and `npx playwright install chromium`; refuses inside a git worktree |
+| `npm start` | Dev server on 4200 |
+| `npm test` / `npm run test:watch` | Vitest browser mode (Chromium) |
+| `npm run lint` / `npm run format` | ESLint and Prettier check / Prettier write |
+| `npm run typecheck` | Strict TypeScript and template type check |
+| `npm run build` | Production build, prerendered to static HTML in `dist/weeljack-admin/browser` |
+| `npm run check:a11y` | axe (WCAG 2.2 AA) on every prerendered route, two sizes, light and dark |
+| `npm run check:licences` | Fails on a production dependency outside the licence allow-list |
+| `npm run check` | All of the above, in order, failing fast |
+
+Right now the app is a walking skeleton: one prerendered page that proves the build, tests, checks, CI and Pages
+workflow. The pages below arrive in later steps.
 
 ## What it will include
 
