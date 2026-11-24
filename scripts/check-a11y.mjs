@@ -2,10 +2,14 @@
 // what the pages open: the menu drawer open at 390 x 844, the configurator open at 1440 x 900, the
 // dashboard's first agent menu open at 1440 x 900, its chart's data table shown at both sizes and, on
 // the tickets page at both sizes, the New ticket dialog open, a row's delete confirm open and the
-// "deleted" toast on screen.
+// "deleted" toast on screen, and on the login page at both sizes the form with its errors shown and
+// with the password shown.
 // Serves dist/weeljack-admin/browser under /weeljack-admin/ with a built-in http server, so the audit
-// sees exactly what GitHub Pages serves. Any violation, missing CSP tag, CSP violation, request
-// outside the local server, or empty route list fails the run.
+// sees exactly what GitHub Pages serves: an unknown path is answered with status 404 and the body of
+// 404.html (the run fails when 404.html is missing). One unknown, nested URL is audited at both sizes
+// in both schemes: it must answer 404 and show the "Page not found" heading. Only that main
+// document's own 404 console message is tolerated there. Any violation, missing CSP tag, CSP
+// violation, other console error, request outside the local server, or empty route list fails the run.
 import AxeBuilder from '@axe-core/playwright';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
@@ -22,6 +26,8 @@ const SIZES = [
   { name: '390x844', width: 390, height: 844 },
 ];
 const SCHEMES = ['light', 'dark'];
+// A nested address no route matches: Pages answers it with 404.html at any depth.
+const UNKNOWN_ROUTE = `${BASE}no/such/page`;
 
 // Opens an overlay and waits until it is visible and has stopped moving, so axe measures the settled
 // state. Each state runs on the routes in `routes` at one size, in both schemes.
@@ -108,6 +114,27 @@ const STATES = [
       },
     },
   ]),
+  ...SIZES.flatMap((size) => [
+    {
+      name: 'login-errors-shown',
+      size,
+      routes: [`${BASE}auth/login`],
+      async prepare(page) {
+        await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+        await settle(page, page.getByText('Enter your email'));
+        await settle(page, page.getByText('Enter your password'));
+      },
+    },
+    {
+      name: 'password-shown',
+      size,
+      routes: [`${BASE}auth/login`],
+      async prepare(page) {
+        await page.getByRole('button', { name: 'Show Password' }).click();
+        await settle(page, page.getByRole('button', { name: 'Hide Password' }));
+      },
+    },
+  ]),
 ];
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -136,11 +163,13 @@ function resolveFile(urlPath) {
 }
 
 function startServer() {
+  const notFoundPage = join(SITE, '404.html');
   const server = createServer((request, response) => {
     const { pathname } = new URL(request.url ?? '/', 'http://localhost');
     const file = resolveFile(pathname);
     if (!file) {
-      response.writeHead(404).end('Not found');
+      // As GitHub Pages does: status 404 with the body of 404.html.
+      response.writeHead(404, { 'content-type': TYPES['.html'] }).end(readFileSync(notFoundPage));
       return;
     }
     response.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' });
@@ -152,7 +181,8 @@ function startServer() {
   });
 }
 
-async function audit(browser, origin, route, size, scheme, prepare) {
+// `unknown` marks the unknown-URL audit: the document must answer 404 and show the not-found heading.
+async function audit(browser, origin, route, size, scheme, prepare, unknown = false) {
   const context = await browser.newContext({
     viewport: { width: size.width, height: size.height },
     colorScheme: scheme,
@@ -167,15 +197,31 @@ async function audit(browser, origin, route, size, scheme, prepare) {
       });
     });
     page.on('console', (message) => {
-      if (message.type() === 'error') problems.push(`console error: ${message.text()}`);
+      if (message.type() !== 'error') return;
+      // Chromium logs the main document's own 404 as a console error; nothing else is let through.
+      if (unknown && message.location().url === `${origin}${route}` && /404/.test(message.text())) {
+        return;
+      }
+      problems.push(`console error: ${message.text()}`);
     });
     page.on('pageerror', (error) => problems.push(`page error: ${error.message}`));
     page.on('request', (request) => {
       if (!request.url().startsWith(origin)) problems.push(`external request: ${request.url()}`);
     });
 
-    await page.goto(`${origin}${route}`, { waitUntil: 'load' });
+    const response = await page.goto(`${origin}${route}`, { waitUntil: 'load' });
     await page.waitForLoadState('networkidle');
+
+    if (unknown) {
+      if (response?.status() !== 404) {
+        problems.push(`unknown URL answered ${response?.status()}, expected 404`);
+      }
+      const heading = page.getByRole('heading', { level: 1, name: 'Page not found' });
+      if (!(await heading.isVisible())) problems.push('"Page not found" heading is not visible');
+      if (new URL(page.url()).pathname !== route) {
+        problems.push(`the typed URL changed to ${new URL(page.url()).pathname}`);
+      }
+    }
 
     if (prepare) {
       try {
@@ -210,6 +256,10 @@ async function main() {
     console.error('check:a11y failed: no prerendered routes found. Run `npm run build` first.');
     return 1;
   }
+  if (!existsSync(join(SITE, '404.html'))) {
+    console.error('check:a11y failed: 404.html is missing. Run `npm run build` first.');
+    return 1;
+  }
 
   const server = await startServer();
   const { port } = server.address();
@@ -217,6 +267,7 @@ async function main() {
   const browser = await chromium.launch({ headless: true });
   let total = 0;
   let stateCount = 0;
+  let unknownCount = 0;
   const failures = [];
   try {
     for (const route of routes) {
@@ -249,14 +300,36 @@ async function main() {
         }
       }
     }
+    // The unknown URL, served the way Pages serves it.
+    for (const size of SIZES) {
+      for (const scheme of SCHEMES) {
+        const { count, details } = await audit(
+          browser,
+          origin,
+          UNKNOWN_ROUTE,
+          size,
+          scheme,
+          undefined,
+          true,
+        );
+        total += count;
+        unknownCount += 1;
+        console.log(
+          `${UNKNOWN_ROUTE}  ${size.name}  ${scheme}  unknown URL (404)  violations: ${count}`,
+        );
+        for (const detail of details) {
+          failures.push(`${UNKNOWN_ROUTE} ${size.name} ${scheme} unknown URL: ${detail}`);
+        }
+      }
+    }
   } finally {
     await browser.close();
     await new Promise((done) => server.close(done));
   }
 
-  const combinations = routes.length * SIZES.length * SCHEMES.length + stateCount;
+  const combinations = routes.length * SIZES.length * SCHEMES.length + stateCount + unknownCount;
   console.log(
-    `check:a11y: ${routes.length} route(s), ${combinations} combination(s) (${stateCount} overlay state(s)), ${total} violation(s) in total`,
+    `check:a11y: ${routes.length} route(s), ${combinations} combination(s) (${stateCount} overlay state(s), ${unknownCount} unknown-URL row(s)), ${total} violation(s) in total`,
   );
   for (const failure of failures) console.error(`  ${failure}`);
   return total === 0 ? 0 : 1;

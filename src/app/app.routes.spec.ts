@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { App } from './app';
 import { appConfig } from './app.config';
 import { LAYOUT_STORAGE_KEY } from './layout/layout.service';
+import { resetLayoutEnvironment } from './layout/testing/environment';
 import { routes } from './app.routes';
 
 interface Leaf {
@@ -34,7 +35,7 @@ describe('routes', () => {
   });
 
   afterEach(() => {
-    localStorage.removeItem(LAYOUT_STORAGE_KEY);
+    resetLayoutEnvironment();
   });
 
   it('gives every page route its own non-empty title', () => {
@@ -54,6 +55,47 @@ describe('routes', () => {
       await fixture.whenStable();
       expect(TestBed.inject(Title).getTitle(), page.url).toBe(page.title);
     }
+    fixture.destroy();
+  });
+
+  it('renders the not-found page in place for an unknown address, keeping the URL and title', async () => {
+    const fixture = TestBed.createComponent(App);
+    const router = TestBed.inject(Router);
+    await router.navigateByUrl('/no/such/page');
+    await fixture.whenStable();
+
+    const root = fixture.nativeElement as HTMLElement;
+    expect(router.url).toBe('/no/such/page');
+    expect(root.querySelector('h1')?.textContent.trim()).toBe('Page not found');
+    expect(TestBed.inject(Title).getTitle()).toBe('Page not found - weeljack-admin');
+    fixture.destroy();
+  });
+
+  it('keeps the shell around /empty and drops it on a full page', async () => {
+    const fixture = TestBed.createComponent(App);
+    const router = TestBed.inject(Router);
+    const root = fixture.nativeElement as HTMLElement;
+
+    await router.navigateByUrl('/empty');
+    await fixture.whenStable();
+    expect(root.querySelector('app-layout')).not.toBeNull();
+    expect(root.querySelector('h1')?.textContent.trim()).toBe('Empty page');
+
+    await router.navigateByUrl('/auth/access');
+    await fixture.whenStable();
+    expect(root.querySelector('app-layout')).toBeNull();
+    expect(root.querySelector('app-full-page main')).not.toBeNull();
+    expect(root.querySelector('h1')?.textContent.trim()).toBe('Access denied');
+    fixture.destroy();
+  });
+
+  it('applies the stored dark scheme on a full page', async () => {
+    localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify({ scheme: 'dark' }));
+    const fixture = TestBed.createComponent(App);
+    await TestBed.inject(Router).navigateByUrl('/auth/error');
+    await fixture.whenStable();
+
+    expect(document.documentElement.classList.contains('wj-dark')).toBe(true);
     fixture.destroy();
   });
 });

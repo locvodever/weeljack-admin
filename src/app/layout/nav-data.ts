@@ -1,4 +1,12 @@
-import { wjIconLayoutDashboard, wjIconTicket } from 'weeljack-ng/icon';
+import {
+  wjIconCircleExclamationPoint,
+  wjIconCircleQuestionMark,
+  wjIconFile,
+  wjIconLayoutDashboard,
+  wjIconLock,
+  wjIconLogIn,
+  wjIconTicket,
+} from 'weeljack-ng/icon';
 import type { WjIconDef } from 'weeljack-ng/icon';
 
 export interface NavLink {
@@ -17,7 +25,7 @@ export interface NavGroup {
 
 /**
  * The sidebar tree. A link is listed only once its route exists, and a group with no links is not
- * rendered, so "Pages" shows up when T4 and T5 add their routes.
+ * rendered. "Pages" holds the full pages and the empty page; the landing page joins it with T5.
  */
 export const NAV_GROUPS: readonly NavGroup[] = [
   {
@@ -30,5 +38,15 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     label: 'Service desk',
     links: [{ label: 'Tickets', path: '/tickets', icon: wjIconTicket }],
   },
-  { id: 'pages', label: 'Pages', links: [] },
+  {
+    id: 'pages',
+    label: 'Pages',
+    links: [
+      { label: 'Login', path: '/auth/login', icon: wjIconLogIn },
+      { label: 'Error', path: '/auth/error', icon: wjIconCircleExclamationPoint },
+      { label: 'Access denied', path: '/auth/access', icon: wjIconLock },
+      { label: '404', path: '/notfound', icon: wjIconCircleQuestionMark },
+      { label: 'Empty', path: '/empty', icon: wjIconFile },
+    ],
+  },
 ];

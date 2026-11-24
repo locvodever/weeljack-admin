@@ -1,0 +1,42 @@
+:host {
+  display: block;
+  inline-size: 100%;
+}
+
+.page-panel {
+  max-inline-size: 32rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.numeral {
+  margin: 0 0 8px;
+  color: var(--wj-primary-color);
+  font-size: 4.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+.text {
+  margin: 0 0 24px;
+  color: var(--wj-text-muted-color);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 720px) {
+  .actions {
+    flex-flow: row wrap;
+    justify-content: center;
+  }
+}

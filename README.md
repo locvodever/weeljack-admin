@@ -20,12 +20,12 @@ npm run check   # the gate: lint, typecheck, test, build, a11y, licences
 | `npm test` / `npm run test:watch` | Vitest browser mode (Chromium) |
 | `npm run lint` / `npm run format` | ESLint and Prettier check / Prettier write |
 | `npm run typecheck` | Strict TypeScript and template type check |
-| `npm run build` | Production build, prerendered to static HTML in `dist/weeljack-admin/browser` |
-| `npm run check:a11y` | axe (WCAG 2.2 AA) on every prerendered route, two sizes, light and dark |
+| `npm run build` | Production build, prerendered to static HTML in `dist/weeljack-admin/browser`, then `404.html` copied from the prerendered `/notfound` |
+| `npm run check:a11y` | axe (WCAG 2.2 AA) on every prerendered route and an unknown URL (served as Pages does, status 404), two sizes, light and dark |
 | `npm run check:licences` | Fails on a production dependency outside the licence allow-list |
 | `npm run check` | All of the above, in order, failing fast |
 
-The app has its shell, the dashboard and the tickets page. The pages below arrive in later steps.
+The app has its shell, the dashboard, the tickets page and the small pages. The landing page arrives in a later step.
 
 ## What is here
 
@@ -40,9 +40,17 @@ The app has its shell, the dashboard and the tickets page. The pages below arriv
   neutralises a leading `=`, `+`, `-`, `@`, tab or carriage return with a single quote, so a spreadsheet opens it as
   text and never runs it as a formula.
 
+- A mock login at `/auth/login`: a demo, nothing is sent or stored. Sign in checks both fields (an email address and a
+  password, with a show-password button), shows each error beside its field, and opens the dashboard.
+- Error (`/auth/error`), access-denied (`/auth/access`) and not-found (`/notfound`) pages, and an empty page at `/empty`
+  inside the shell. The login and these three are full pages, outside the shell, and still open in your stored theme.
+  An unknown address shows the not-found page and keeps what you typed.
+- `404.html`: `npm run build` copies the prerendered not-found page to `404.html`, which GitHub Pages serves for any
+  unknown address.
+
 ## What it will include
 
-- Login, error, access-denied, not-found and empty pages, and a landing page.
+- A landing page.
 
 The demo is a fictional service desk with made-up data. The default look is WeeljackNg's Police preset (`wjPolice`),
 and every other WeeljackNg preset is one click away in the configurator.
