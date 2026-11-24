@@ -45,6 +45,16 @@ describe('Sidebar', () => {
     expect(link?.getAttribute('aria-current')).toBe('page');
   });
 
+  it('draws the Dashboard icon as a decoration and keeps the label as the link name', async () => {
+    const { root } = await setup('/');
+
+    const link = root.querySelector('a');
+    const icon = link?.querySelector('wj-icon svg');
+    expect(icon?.getAttribute('aria-hidden')).toBe('true');
+    expect(link?.hasAttribute('aria-label')).toBe(false);
+    expect(link?.textContent.trim()).toBe('Dashboard');
+  });
+
   it('keeps a group closed when it does not hold the current route, and a click opens it', async () => {
     const { fixture, root } = await setup('/elsewhere');
 

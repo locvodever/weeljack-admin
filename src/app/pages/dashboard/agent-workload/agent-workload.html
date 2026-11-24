@@ -1,0 +1,38 @@
+<section aria-labelledby="workload-title">
+  <h2 id="workload-title" class="widget-title">Agent workload</h2>
+  <ul class="agents">
+    @for (row of rows(); track row.workload.agent.id) {
+      @let agent = row.workload.agent;
+      <li class="agent">
+        <div class="head">
+          <wj-icon class="icon" [icon]="icons.agent" />
+          <div class="who">
+            <p class="name">{{ agent.name }}</p>
+            <p class="count">{{ row.workload.open }} open of {{ agent.capacity }}</p>
+          </div>
+          <wj-button
+            [ariaLabel]="'Actions for ' + agent.name"
+            ariaHasPopup="menu"
+            [ariaExpanded]="openId() === agent.id"
+            (click)="menu.toggle($event)"
+          >
+            <wj-icon [icon]="icons.more" />
+          </wj-button>
+          <wj-menu
+            #menu
+            popup
+            [ariaLabel]="'Actions for ' + agent.name"
+            [model]="row.items"
+            (opened)="openId.set(agent.id)"
+            (closed)="openId.set(null)"
+          />
+        </div>
+        <wj-progressbar
+          [value]="row.workload.percent"
+          showValue
+          [ariaLabel]="'Workload of ' + agent.name"
+        />
+      </li>
+    }
+  </ul>
+</section>

@@ -67,6 +67,12 @@ a {
   text-decoration: none;
 }
 
+.nav-icon {
+  flex: none;
+  margin-inline-end: 12px;
+  font-size: 1.25rem;
+}
+
 a:hover {
   background: var(--wj-content-hover-background);
 }

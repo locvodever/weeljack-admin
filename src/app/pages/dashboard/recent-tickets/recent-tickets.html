@@ -1,0 +1,45 @@
+<section aria-labelledby="recent-title">
+  <h2 id="recent-title" class="widget-title">Recent tickets</h2>
+  <div class="scroll" role="region" tabindex="0" aria-labelledby="recent-title">
+    <wj-table [value]="tickets()" dataKey="id" ariaLabelledBy="recent-title">
+      <wj-column field="id" header="Ticket">
+        <ng-template wjTableCell let-ticket [wjTableCellOf]="tickets()">
+          <a
+            class="ticket-link"
+            routerLink="/tickets"
+            [queryParams]="{ id: ticket.id }"
+            [attr.aria-label]="ticket.id + ', ' + ticket.subject"
+            >{{ ticket.id }}</a
+          >
+        </ng-template>
+      </wj-column>
+      <wj-column field="subject" header="Subject">
+        <ng-template wjTableCell let-ticket [wjTableCellOf]="tickets()">
+          <span class="subject" [attr.title]="ticket.subject">{{ ticket.subject }}</span>
+        </ng-template>
+      </wj-column>
+      <wj-column field="requester" header="Requester">
+        <ng-template wjTableCell let-ticket [wjTableCellOf]="tickets()">
+          <wj-avatar
+            [label]="initials(ticket.requester)"
+            shape="circle"
+            [ariaLabel]="ticket.requester"
+          />
+        </ng-template>
+      </wj-column>
+      <wj-column field="priority" header="Priority">
+        <ng-template wjTableCell let-ticket [wjTableCellOf]="tickets()">
+          <wj-tag
+            [value]="priorityLabel[ticket.priority]"
+            [severity]="prioritySeverity[ticket.priority]"
+          />
+        </ng-template>
+      </wj-column>
+      <wj-column field="status" header="Status">
+        <ng-template wjTableCell let-ticket [wjTableCellOf]="tickets()">
+          <wj-tag [value]="statusLabel[ticket.status]" [severity]="statusSeverity[ticket.status]" />
+        </ng-template>
+      </wj-column>
+    </wj-table>
+  </div>
+</section>

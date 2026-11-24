@@ -1,0 +1,43 @@
+<section aria-labelledby="chart-title">
+  <h2 id="chart-title" class="widget-title">Tickets by status</h2>
+  <app-chart
+    [labels]="status().weeks"
+    [series]="series()"
+    ariaLabel="Tickets by status per week"
+    [ariaDescribedBy]="tableId"
+  />
+  <div class="actions">
+    <wj-button
+      variant="outlined"
+      [label]="shown() ? 'Hide data table' : 'Show data table'"
+      [ariaExpanded]="shown()"
+      [pt]="togglePt"
+      (click)="toggle()"
+    >
+      <wj-icon [icon]="icon" />
+    </wj-button>
+  </div>
+  <table class="data" [id]="tableId" [hidden]="!shown()">
+    <caption>
+      Tickets by status per week. Each week is named by the Monday it starts on.
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">Week of</th>
+        @for (item of series(); track item.label) {
+          <th scope="col">{{ item.label }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (week of status().weeks; track week; let i = $index) {
+        <tr>
+          <th scope="row">{{ week }}</th>
+          @for (item of series(); track item.label) {
+            <td>{{ item.values[i] }}</td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>

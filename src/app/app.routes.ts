@@ -7,8 +7,8 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        title: 'Home - weeljack-admin',
-        loadComponent: () => import('./pages/home/home').then((m) => m.Home),
+        title: 'Dashboard - weeljack-admin',
+        loadComponent: () => import('./pages/dashboard/dashboard').then((m) => m.Dashboard),
       },
     ],
   },

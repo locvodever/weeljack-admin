@@ -10,6 +10,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter, map } from 'rxjs';
+import { WjIcon } from 'weeljack-ng/icon';
 import { NAV_GROUPS, NavGroup } from '../nav-data';
 
 /**
@@ -18,7 +19,7 @@ import { NAV_GROUPS, NavGroup } from '../nav-data';
  */
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, WjIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',

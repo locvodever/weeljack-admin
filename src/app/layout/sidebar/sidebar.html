@@ -22,8 +22,12 @@
                 [routerLinkActiveOptions]="{ exact: true }"
                 ariaCurrentWhenActive="page"
                 (click)="linkClick.emit()"
-                >{{ link.label }}</a
               >
+                @if (link.icon; as icon) {
+                  <wj-icon class="nav-icon" [icon]="icon" />
+                }
+                {{ link.label }}
+              </a>
             </li>
           }
         </ul>

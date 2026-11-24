@@ -1,5 +1,6 @@
 // Audits every prerendered route with axe (WCAG 2.2 AA) at two sizes in light and dark (28 Q3), plus
-// the shell's overlays: the menu drawer open at 390 x 844 and the configurator open at 1440 x 900.
+// what the pages open: the menu drawer open at 390 x 844, the configurator open at 1440 x 900, the
+// dashboard's first agent menu open at 1440 x 900 and its chart's data table shown at both sizes.
 // Serves dist/weeljack-admin/browser under /weeljack-admin/ with a built-in http server, so the audit
 // sees exactly what GitHub Pages serves. Any violation, missing CSP tag, CSP violation, request
 // outside the local server, or empty route list fails the run.
@@ -48,6 +49,27 @@ const STATES = [
       await settle(page, page.getByRole('dialog', { name: 'Theme' }));
     },
   },
+  {
+    name: 'agent-menu-open',
+    size: SIZES[0],
+    routes: [BASE],
+    async prepare(page) {
+      await page
+        .getByRole('button', { name: /^Actions for / })
+        .first()
+        .click();
+      await settle(page, page.getByRole('menu', { name: /^Actions for / }));
+    },
+  },
+  ...SIZES.map((size) => ({
+    name: 'data-table-shown',
+    size,
+    routes: [BASE],
+    async prepare(page) {
+      await page.getByRole('button', { name: 'Show data table' }).click();
+      await settle(page, page.getByRole('table', { name: /Tickets by status/ }));
+    },
+  })),
 ];
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
