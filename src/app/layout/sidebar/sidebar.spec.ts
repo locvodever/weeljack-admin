@@ -26,12 +26,12 @@ async function setup(url: string) {
 }
 
 describe('Sidebar', () => {
-  it('is the Main navigation landmark, with only the groups that have links', async () => {
+  it('is the Main navigation landmark, with its three groups', async () => {
     const { root } = await setup('/');
 
     expect(root.querySelector('nav')?.getAttribute('aria-label')).toBe('Main');
     const heads = Array.from(root.querySelectorAll('button.head'));
-    expect(heads.map((head) => head.textContent.trim())).toEqual(['Home', 'Service desk']);
+    expect(heads.map((head) => head.textContent.trim())).toEqual(['Home', 'Service desk', 'Pages']);
   });
 
   it('opens the group holding the current route and marks the link as the current page', async () => {

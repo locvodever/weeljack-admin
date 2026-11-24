@@ -15,7 +15,7 @@
     "lint": "eslint . --max-warnings 0 && prettier --check .",
     "format": "prettier --write .",
     "typecheck": "ngc --noEmit -p tsconfig.app.json && ngc --noEmit -p tsconfig.spec.json",
-    "build": "ng build",
+    "build": "ng build && node scripts/emit-404.mjs",
     "check:a11y": "node scripts/check-a11y.mjs",
     "check:licences": "node --test scripts/check-licences.test.mjs && node scripts/check-licences.mjs",
     "check": "npm run lint && npm run typecheck && npm test && npm run build && npm run check:a11y && npm run check:licences"

@@ -57,6 +57,57 @@ a:focus-visible {
   color: var(--wj-text-color);
 }
 
+/* A link that looks like a button: WjButton renders a button element, and going to a page is a link. */
+.link-button {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--wj-primary-color);
+  border-radius: 8px;
+  background: var(--wj-primary-color);
+  color: var(--wj-primary-contrast-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link-button.outlined {
+  background: transparent;
+  color: var(--wj-primary-color);
+}
+
+.link-button:hover {
+  filter: brightness(1.1);
+}
+
+/* A WjButton that fills its row: the host, the Optimus wrapper and the button itself all stretch. */
+.block-button,
+.block-button p-button,
+.block-button button {
+  display: flex;
+  inline-size: 100%;
+  justify-content: center;
+}
+
+/* The panel on a full page: the login, error, access-denied and not-found cards. */
+.page-panel {
+  box-sizing: border-box;
+  inline-size: 100%;
+  padding: 24px;
+  border: 1px solid var(--wj-content-border-color);
+  border-radius: var(--wj-border-radius-lg, 12px);
+  background: var(--wj-content-background);
+  color: var(--wj-text-color);
+}
+
+@media (min-width: 720px) {
+  .page-panel {
+    padding: 32px;
+  }
+}
+
 /* The heading of a dashboard widget, and text that only assistive technology reads. */
 .widget-title {
   margin: 0 0 16px;
