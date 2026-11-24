@@ -2,10 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  inject,
   input,
   model,
   output,
-  viewChild,
 } from '@angular/core';
 import type { WjSortOrder } from 'weeljack-ng';
 import { WjAvatar } from 'weeljack-ng/avatar';
@@ -21,8 +21,10 @@ import { PRIORITY_SEVERITY, STATUS_SEVERITY } from '../../../data/ticket-tags';
  * The tickets as a `wj-table`: selectable, sortable on every data column and paged by its own pager
  * ("Showing 1 to 10 of 32"). It gets the full filtered and sorted list as `value`, so sort and the
  * page report see every ticket. Selection, sort and page are `model`s the page owns; Edit and
- * Delete are reported as events. The table sits in a focusable `role="region"`, so a keyboard can
- * scroll it sideways when the panel is narrower than its columns.
+ * Delete are reported as events. The Actions column is frozen to the inline end, which makes the
+ * library's own table container the one sideways scroller; weeljack-ng makes that container a
+ * focusable `role="region"` named by `ariaLabel` ("Ticket list"), so a keyboard can scroll it when the
+ * panel is narrower than the columns. The pager sits outside that container and never moves sideways.
  */
 @Component({
   selector: 'app-tickets-table',
@@ -53,7 +55,7 @@ export class TicketsTable {
   readonly edit = output<Ticket>();
   readonly remove = output<Ticket>();
 
-  private readonly region = viewChild.required<ElementRef<HTMLElement>>('region');
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   protected readonly pageSizes = [10, 20, 50];
   protected readonly icons = { edit: wjIconPencil, remove: wjIconTrash };
@@ -66,7 +68,7 @@ export class TicketsTable {
 
   /** Focuses the Edit button of ticket `id` if its row is on the page; returns whether it was. */
   focusEdit(id: string): boolean {
-    const button = this.region().nativeElement.querySelector<HTMLElement>(
+    const button = this.host.nativeElement.querySelector<HTMLElement>(
       `button[aria-label="Edit ticket ${id}"]`,
     );
     button?.focus();
@@ -75,6 +77,6 @@ export class TicketsTable {
 
   /** Moves focus to the table's scroll region, for when the control that had it is gone. */
   focusRegion(): void {
-    this.region().nativeElement.focus();
+    this.host.nativeElement.querySelector<HTMLElement>('[role="region"]')?.focus();
   }
 }

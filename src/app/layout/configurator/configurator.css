@@ -62,7 +62,7 @@
   min-block-size: 44px;
   padding: 4px 16px;
   border: 1px solid var(--wj-surface-500);
-  border-radius: 22px;
+  border-radius: 999px;
   font-size: 0.875rem;
   pointer-events: none;
   transition: box-shadow var(--shell-motion) ease-out;

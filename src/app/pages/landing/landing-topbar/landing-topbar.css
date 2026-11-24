@@ -23,7 +23,7 @@
   box-sizing: border-box;
   min-block-size: 44px;
   padding-inline: 8px;
-  border-radius: 8px;
+  border-radius: var(--wj-button-border-radius);
   text-decoration: none;
 }
 
@@ -50,7 +50,7 @@
   min-block-size: 44px;
   padding: 8px 16px;
   border: 1px solid var(--wj-content-border-color);
-  border-radius: 8px;
+  border-radius: var(--wj-button-border-radius);
   background: transparent;
   color: var(--wj-text-color);
   font: inherit;

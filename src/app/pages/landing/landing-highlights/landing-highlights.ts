@@ -25,7 +25,7 @@ export class LandingHighlights {
       points: [
         'A menu drawer in place of the sidebar',
         'Touch targets at least 44 pixels tall',
-        'Nothing scrolls sideways at 390 pixels',
+        'The page never scrolls sideways at 390 pixels',
       ],
       art: 'art/landing-phone.svg',
       alt: 'The dashboard on a phone',
@@ -34,7 +34,7 @@ export class LandingHighlights {
     },
     {
       title: 'On the desk in front of you',
-      text: 'From 960 pixels the sidebar docks beside the page, and the tickets table has room for every column.',
+      text: 'From 960 pixels the sidebar docks beside the page, and from 1280 the tickets table shows every column.',
       points: [
         'A docked sidebar, or an overlay if you prefer',
         'Sortable columns, paging and multiple selection',

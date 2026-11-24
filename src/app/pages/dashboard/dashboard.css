@@ -14,7 +14,7 @@ h1 {
   gap: 24px;
 }
 
-/* One column below 1200 px. From there recent tickets spans the page (its table needs the width), then chart | workload, then the feed. */
+/* One column below 1200 px. From there, in DOM order, recent tickets and the status chart each span the page (the table needs the width), then workload | feed side by side. */
 .panels {
   display: grid;
   gap: 24px;
@@ -27,7 +27,7 @@ h1 {
   }
 
   app-recent-tickets,
-  app-activity-feed {
+  app-status-chart {
     grid-column: 1 / -1;
   }
 }

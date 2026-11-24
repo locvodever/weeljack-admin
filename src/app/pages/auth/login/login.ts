@@ -8,7 +8,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { WjButton } from 'weeljack-ng/button';
 import { WjCheckbox } from 'weeljack-ng/checkbox';
 import { WjField } from 'weeljack-ng/field';
@@ -25,7 +25,7 @@ const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  */
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, WjButton, WjCheckbox, WjField, WjInputText, WjPassword],
+  imports: [FormsModule, RouterLink, WjButton, WjCheckbox, WjField, WjInputText, WjPassword],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './login.html',
   styleUrl: './login.css',
