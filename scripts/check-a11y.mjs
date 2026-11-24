@@ -1,4 +1,5 @@
-// Audits every prerendered route with axe (WCAG 2.2 AA) at two sizes in light and dark (28 Q3).
+// Audits every prerendered route with axe (WCAG 2.2 AA) at two sizes in light and dark (28 Q3), plus
+// the shell's overlays: the menu drawer open at 390 x 844 and the configurator open at 1440 x 900.
 // Serves dist/weeljack-admin/browser under /weeljack-admin/ with a built-in http server, so the audit
 // sees exactly what GitHub Pages serves. Any violation, missing CSP tag, CSP violation, request
 // outside the local server, or empty route list fails the run.
@@ -18,8 +19,39 @@ const SIZES = [
   { name: '390x844', width: 390, height: 844 },
 ];
 const SCHEMES = ['light', 'dark'];
+
+// Opens an overlay and waits until it is visible and has stopped moving, so axe measures the settled
+// state. Each state runs on the routes in `routes` at one size, in both schemes.
+async function settle(page, dialog) {
+  await dialog.waitFor({ state: 'visible' });
+  await page.waitForFunction(() =>
+    document.getAnimations().every((a) => a.playState !== 'running' && a.playState !== 'pending'),
+  );
+}
+
+const STATES = [
+  {
+    name: 'drawer-open',
+    size: SIZES[1],
+    routes: [BASE],
+    async prepare(page) {
+      await page.getByRole('button', { name: 'Menu', exact: true }).click();
+      await settle(page, page.getByRole('dialog', { name: 'Menu' }));
+    },
+  },
+  {
+    name: 'configurator-open',
+    size: SIZES[0],
+    routes: [BASE],
+    async prepare(page) {
+      await page.getByRole('button', { name: 'Theme settings' }).click();
+      await settle(page, page.getByRole('dialog', { name: 'Theme' }));
+    },
+  },
+];
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
+  '.woff2': 'font/woff2',
   '.js': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
@@ -60,7 +92,7 @@ function startServer() {
   });
 }
 
-async function audit(browser, origin, route, size, scheme) {
+async function audit(browser, origin, route, size, scheme, prepare) {
   const context = await browser.newContext({
     viewport: { width: size.width, height: size.height },
     colorScheme: scheme,
@@ -84,6 +116,14 @@ async function audit(browser, origin, route, size, scheme) {
 
     await page.goto(`${origin}${route}`, { waitUntil: 'load' });
     await page.waitForLoadState('networkidle');
+
+    if (prepare) {
+      try {
+        await prepare(page);
+      } catch (error) {
+        problems.push(`could not open the state: ${String(error.message).split(/\r?\n/, 1)[0]}`);
+      }
+    }
 
     const csp = await page.locator('meta[http-equiv="Content-Security-Policy"]').count();
     if (csp !== 1) problems.push(`CSP meta tag count is ${csp}, expected 1`);
@@ -116,6 +156,7 @@ async function main() {
   const origin = `http://127.0.0.1:${port}`;
   const browser = await chromium.launch({ headless: true });
   let total = 0;
+  let stateCount = 0;
   const failures = [];
   try {
     for (const route of routes) {
@@ -127,15 +168,35 @@ async function main() {
           for (const detail of details) failures.push(`${route} ${size.name} ${scheme}: ${detail}`);
         }
       }
+      for (const state of STATES.filter((item) => item.routes.includes(route))) {
+        for (const scheme of SCHEMES) {
+          const { count, details } = await audit(
+            browser,
+            origin,
+            route,
+            state.size,
+            scheme,
+            state.prepare,
+          );
+          total += count;
+          stateCount += 1;
+          console.log(
+            `${route}  ${state.size.name}  ${scheme}  ${state.name}  violations: ${count}`,
+          );
+          for (const detail of details) {
+            failures.push(`${route} ${state.size.name} ${scheme} ${state.name}: ${detail}`);
+          }
+        }
+      }
     }
   } finally {
     await browser.close();
     await new Promise((done) => server.close(done));
   }
 
-  const combinations = routes.length * SIZES.length * SCHEMES.length;
+  const combinations = routes.length * SIZES.length * SCHEMES.length + stateCount;
   console.log(
-    `check:a11y: ${routes.length} route(s), ${combinations} combination(s), ${total} violation(s) in total`,
+    `check:a11y: ${routes.length} route(s), ${combinations} combination(s) (${stateCount} overlay state(s)), ${total} violation(s) in total`,
   );
   for (const failure of failures) console.error(`  ${failure}`);
   return total === 0 ? 0 : 1;

@@ -1,0 +1,63 @@
+<wj-popover ariaLabelledBy="configurator-title" (opened)="focusChecked()" (closed)="closed.emit()">
+  <div #panel class="panel">
+    <h2 class="title" id="configurator-title">Theme</h2>
+
+    <fieldset class="row">
+      <legend class="legend">Preset</legend>
+      <div class="options">
+        @for (row of presets; track row.name) {
+          <label class="option">
+            <input
+              class="radio"
+              type="radio"
+              name="configurator-preset"
+              [value]="row.name"
+              [checked]="layout.preset() === row.name"
+              (change)="choosePreset(row.name)"
+            />
+            <span class="option-text">{{ row.label }}</span>
+          </label>
+        }
+      </div>
+    </fieldset>
+
+    <fieldset class="row">
+      <legend class="legend">Surface</legend>
+      <div class="options">
+        @for (row of surfaces; track row.name) {
+          <label class="option">
+            <input
+              class="radio"
+              type="radio"
+              name="configurator-surface"
+              [value]="row.name"
+              [checked]="layout.surface() === row.name"
+              (change)="chooseSurface(row.name)"
+            />
+            <span class="option-text">{{ row.label }}</span>
+          </label>
+        }
+      </div>
+    </fieldset>
+
+    <div class="row">
+      <span class="legend" id="configurator-scheme">Scheme</span>
+      <wj-selectbutton
+        ariaLabelledBy="configurator-scheme"
+        [options]="schemes"
+        [value]="layout.scheme()"
+        (valueChange)="chooseScheme($event)"
+      />
+    </div>
+
+    <div class="row">
+      <span class="legend" id="configurator-menu">Menu</span>
+      <wj-selectbutton
+        ariaLabelledBy="configurator-menu"
+        [options]="menuModes"
+        [value]="layout.menuMode()"
+        (valueChange)="chooseMenuMode($event)"
+      />
+    </div>
+  </div>
+</wj-popover>

@@ -1,0 +1,33 @@
+<nav aria-label="Main">
+  <ul class="groups">
+    @for (group of groups; track group.id) {
+      @let open = openIds().has(group.id);
+      <li>
+        <button
+          type="button"
+          class="head"
+          [attr.aria-expanded]="open"
+          [attr.aria-controls]="idPrefix() + '-' + group.id"
+          (click)="toggle(group)"
+        >
+          {{ group.label }}
+          <span class="chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="links" [id]="idPrefix() + '-' + group.id" [hidden]="!open">
+          @for (link of group.links; track link.path) {
+            <li>
+              <a
+                [routerLink]="link.path"
+                routerLinkActive
+                [routerLinkActiveOptions]="{ exact: true }"
+                ariaCurrentWhenActive="page"
+                (click)="linkClick.emit()"
+                >{{ link.label }}</a
+              >
+            </li>
+          }
+        </ul>
+      </li>
+    }
+  </ul>
+</nav>
