@@ -22,11 +22,15 @@
   column-gap: 16px;
 }
 
+/*
+ * A 44 px target, like the ticket links, around a 24 px line of text: the box grows 10 px above and below
+ * the text, and the margins give that back, so the row and the gap above the table keep their height.
+ */
 .all-link {
   display: inline-flex;
   align-items: center;
-  min-block-size: 24px;
-  margin-block-end: 16px;
+  min-block-size: 44px;
+  margin-block: -10px 6px;
   color: var(--wj-primary-color);
   font-weight: 600;
 }

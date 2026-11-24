@@ -59,6 +59,13 @@ describe('RecentTickets', () => {
     expect(root.querySelector('section')?.getAttribute('aria-labelledby')).toBe('recent-title');
   });
 
+  it('gives the link to every ticket a 44 px target, like the ticket links', async () => {
+    const root = await render();
+
+    const link = root.querySelector<HTMLAnchorElement>('a.all-link');
+    expect(link?.getBoundingClientRect().height).toBeGreaterThanOrEqual(44);
+  });
+
   it('links each id to that ticket on /tickets and names it', async () => {
     const root = await render();
 
