@@ -1,0 +1,19 @@
+<section id="features" class="band" tabindex="-1" aria-labelledby="features-title">
+  <div class="inner">
+    <h2 id="features-title">What the desk does</h2>
+    <p class="intro">Six things the demo really does, so you can try each one.</p>
+    <ul class="cards">
+      @for (feature of features; track feature.title) {
+        <li>
+          <wj-card>
+            <ng-template wjCardTitle>
+              <span class="tile" aria-hidden="true"><wj-icon [icon]="feature.icon" /></span>
+              <h3>{{ feature.title }}</h3>
+            </ng-template>
+            <p class="text">{{ feature.text }}</p>
+          </wj-card>
+        </li>
+      }
+    </ul>
+  </div>
+</section>

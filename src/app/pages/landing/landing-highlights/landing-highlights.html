@@ -1,0 +1,27 @@
+<section id="highlights" class="band" tabindex="-1" aria-labelledby="highlights-title">
+  <div class="inner">
+    <h2 id="highlights-title">Made for every screen</h2>
+    <p class="intro">The same service desk, from a phone to a wide monitor.</p>
+    @for (row of rows; track row.title) {
+      <div class="row">
+        <div class="copy">
+          <h3>{{ row.title }}</h3>
+          <p>{{ row.text }}</p>
+          <ul>
+            @for (point of row.points; track point) {
+              <li>{{ point }}</li>
+            }
+          </ul>
+        </div>
+        <img
+          class="art"
+          [src]="row.art"
+          [alt]="row.alt"
+          [attr.width]="row.width"
+          [attr.height]="row.height"
+          loading="lazy"
+        />
+      </div>
+    }
+  </div>
+</section>

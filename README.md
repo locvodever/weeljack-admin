@@ -25,7 +25,7 @@ npm run check   # the gate: lint, typecheck, test, build, a11y, licences
 | `npm run check:licences` | Fails on a production dependency outside the licence allow-list |
 | `npm run check` | All of the above, in order, failing fast |
 
-The app has its shell, the dashboard, the tickets page and the small pages. The landing page arrives in a later step.
+The app has its shell, the dashboard, the tickets page, the small pages and a landing page.
 
 ## What is here
 
@@ -45,12 +45,13 @@ The app has its shell, the dashboard, the tickets page and the small pages. The 
 - Error (`/auth/error`), access-denied (`/auth/access`) and not-found (`/notfound`) pages, and an empty page at `/empty`
   inside the shell. The login and these three are full pages, outside the shell, and still open in your stored theme.
   An unknown address shows the not-found page and keeps what you typed.
+- A landing page at `/landing`: a product page for the made-up service desk, outside the shell, with a topbar (a Menu
+  toggle below 960 px), a hero, six features, two highlights, three pricing tiers and a footer. Its section links use
+  `routerLink` with a `fragment` (not a bare `#id`, which the app's base href would send to the dashboard), so they
+  also work with JavaScript off, and choosing one moves focus to that section. Its art is drawn for this template
+  ([ASSETS.md](ASSETS.md)).
 - `404.html`: `npm run build` copies the prerendered not-found page to `404.html`, which GitHub Pages serves for any
   unknown address.
-
-## What it will include
-
-- A landing page.
 
 The demo is a fictional service desk with made-up data. The default look is WeeljackNg's Police preset (`wjPolice`),
 and every other WeeljackNg preset is one click away in the configurator.

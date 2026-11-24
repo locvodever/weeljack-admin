@@ -89,6 +89,18 @@ describe('routes', () => {
     fixture.destroy();
   });
 
+  it('renders the landing page at /landing, not the not-found page, with its own title', async () => {
+    const fixture = TestBed.createComponent(App);
+    await TestBed.inject(Router).navigateByUrl('/landing');
+    await fixture.whenStable();
+
+    const root = fixture.nativeElement as HTMLElement;
+    expect(root.querySelector('h1')?.textContent.trim()).toBe('A calm service desk for busy teams');
+    expect(root.querySelector('app-landing')).not.toBeNull();
+    expect(TestBed.inject(Title).getTitle()).toBe('Landing - weeljack-admin');
+    fixture.destroy();
+  });
+
   it('applies the stored dark scheme on a full page', async () => {
     localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify({ scheme: 'dark' }));
     const fixture = TestBed.createComponent(App);

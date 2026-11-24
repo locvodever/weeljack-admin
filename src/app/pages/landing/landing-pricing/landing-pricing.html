@@ -1,0 +1,43 @@
+<section id="pricing" class="band" tabindex="-1" aria-labelledby="pricing-title">
+  <div class="inner">
+    <h2 id="pricing-title">Pricing</h2>
+    <p class="intro">Made-up plans for a made-up product. Nothing here takes payment.</p>
+    <ul class="tiers">
+      @for (tier of tiers; track tier.name) {
+        <li>
+          <wj-card [pt]="tier.recommended ? recommendedPt : tierPt">
+            <ng-template wjCardTitle>
+              <h3>
+                @if (tier.recommended) {
+                  <span class="badge">Recommended</span>
+                }
+                {{ tier.name }}
+              </h3>
+            </ng-template>
+            <p class="price">
+              <span class="amount">{{ tier.price }}</span>
+              <span class="unit">{{ tier.unit }}</span>
+            </p>
+            <p class="audience">{{ tier.audience }}</p>
+            <ul class="features">
+              @for (feature of tier.features; track feature) {
+                <li>
+                  <wj-icon class="tick" [icon]="check" />
+                  <span>{{ feature }}</span>
+                </li>
+              }
+            </ul>
+            <ng-template wjCardFooter>
+              <a
+                class="link-button"
+                [class.outlined]="!tier.recommended"
+                [routerLink]="tier.path"
+                >{{ tier.action }}</a
+              >
+            </ng-template>
+          </wj-card>
+        </li>
+      }
+    </ul>
+  </div>
+</section>

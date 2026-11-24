@@ -3,7 +3,10 @@
 // dashboard's first agent menu open at 1440 x 900, its chart's data table shown at both sizes and, on
 // the tickets page at both sizes, the New ticket dialog open, a row's delete confirm open and the
 // "deleted" toast on screen, and on the login page at both sizes the form with its errors shown and
-// with the password shown.
+// with the password shown, and on the landing page at 390 x 844 the Menu folded open.
+// The landing page's section links are also checked by href: each topbar link must resolve to
+// .../weeljack-admin/landing#features, #highlights and #pricing in the browser, and the prerendered
+// landing/index.html must hold the same three hrefs (the JavaScript-off path).
 // Serves dist/weeljack-admin/browser under /weeljack-admin/ with a built-in http server, so the audit
 // sees exactly what GitHub Pages serves: an unknown path is answered with status 404 and the body of
 // 404.html (the run fails when 404.html is missing). One unknown, nested URL is audited at both sizes
@@ -38,7 +41,20 @@ async function settle(page, dialog) {
   );
 }
 
+const LANDING = `${BASE}landing`;
+const LANDING_SECTIONS = ['features', 'highlights', 'pricing'];
+
 const STATES = [
+  {
+    name: 'landing-menu-open',
+    size: SIZES[1],
+    routes: [LANDING],
+    async prepare(page) {
+      await page.getByRole('button', { name: 'Menu', exact: true }).click();
+      await settle(page, page.getByRole('navigation', { name: 'Sections' }));
+      await settle(page, page.locator('#landing-menu .actions'));
+    },
+  },
   {
     name: 'drawer-open',
     size: SIZES[1],
@@ -250,6 +266,45 @@ async function audit(browser, origin, route, size, scheme, prepare, unknown = fa
   }
 }
 
+// Each topbar section link must resolve to /weeljack-admin/landing#<id> (a bare #id would resolve to
+// the dashboard under the base href), in the live page and in the prerendered HTML.
+async function landingLinkProblems(browser, origin) {
+  const problems = [];
+  const context = await browser.newContext({
+    viewport: { width: SIZES[0].width, height: SIZES[0].height },
+  });
+  try {
+    const page = await context.newPage();
+    await page.goto(`${origin}${LANDING}`, { waitUntil: 'load' });
+    await page.waitForLoadState('networkidle');
+    const hrefs = await page
+      .getByRole('navigation', { name: 'Sections' })
+      .locator('a')
+      .evaluateAll((links) => links.map((link) => link.href));
+    if (hrefs.length !== LANDING_SECTIONS.length) {
+      problems.push(`expected ${LANDING_SECTIONS.length} section links, found ${hrefs.length}`);
+    }
+    LANDING_SECTIONS.forEach((id, index) => {
+      const expected = `${origin}${LANDING}#${id}`;
+      if (hrefs[index] !== expected) {
+        problems.push(
+          `section link ${index + 1} resolves to ${hrefs[index]}, expected ${expected}`,
+        );
+      }
+    });
+  } finally {
+    await context.close();
+  }
+  const file = join(SITE, 'landing', 'index.html');
+  const html = existsSync(file) ? readFileSync(file, 'utf8') : '';
+  for (const id of LANDING_SECTIONS) {
+    if (!html.includes(`href="${LANDING}#${id}"`)) {
+      problems.push(`prerendered landing/index.html has no href="${LANDING}#${id}"`);
+    }
+  }
+  return problems;
+}
+
 async function main() {
   const routes = loadRoutes();
   if (routes.length === 0) {
@@ -268,6 +323,7 @@ async function main() {
   let total = 0;
   let stateCount = 0;
   let unknownCount = 0;
+  let linkRows = 0;
   const failures = [];
   try {
     for (const route of routes) {
@@ -300,6 +356,17 @@ async function main() {
         }
       }
     }
+    // The landing page's section links, by resolved href.
+    if (routes.includes(LANDING)) {
+      const problems = await landingLinkProblems(browser, origin);
+      total += problems.length;
+      linkRows += 1;
+      console.log(`${LANDING}  section link hrefs  violations: ${problems.length}`);
+      for (const problem of problems) failures.push(`${LANDING} section links: ${problem}`);
+    } else {
+      total += 1;
+      failures.push(`${LANDING} is not in the prerendered routes`);
+    }
     // The unknown URL, served the way Pages serves it.
     for (const size of SIZES) {
       for (const scheme of SCHEMES) {
@@ -327,9 +394,10 @@ async function main() {
     await new Promise((done) => server.close(done));
   }
 
-  const combinations = routes.length * SIZES.length * SCHEMES.length + stateCount + unknownCount;
+  const combinations =
+    routes.length * SIZES.length * SCHEMES.length + stateCount + unknownCount + linkRows;
   console.log(
-    `check:a11y: ${routes.length} route(s), ${combinations} combination(s) (${stateCount} overlay state(s), ${unknownCount} unknown-URL row(s)), ${total} violation(s) in total`,
+    `check:a11y: ${routes.length} route(s), ${combinations} combination(s) (${stateCount} overlay state(s), ${unknownCount} unknown-URL row(s), ${linkRows} landing link row(s)), ${total} violation(s) in total`,
   );
   for (const failure of failures) console.error(`  ${failure}`);
   return total === 0 ? 0 : 1;

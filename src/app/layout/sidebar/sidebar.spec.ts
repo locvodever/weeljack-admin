@@ -46,6 +46,18 @@ describe('Sidebar', () => {
     expect(link?.getAttribute('aria-current')).toBe('page');
   });
 
+  it('lists Landing first under Pages, with a decorative icon', async () => {
+    const { root } = await setup('/');
+
+    const heads = Array.from(root.querySelectorAll('button.head'));
+    const pages = heads.find((head) => head.textContent.trim() === 'Pages');
+    const list = root.querySelector(`#${pages?.getAttribute('aria-controls') ?? 'none'}`);
+    const first = list?.querySelector('a');
+    expect(first?.textContent.trim()).toBe('Landing');
+    expect(first?.getAttribute('href')).toBe('/landing');
+    expect(first?.querySelector('wj-icon svg')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
   it('lists Tickets under Service desk, with a decorative icon and its label as the name', async () => {
     const { root } = await setup('/');
 
