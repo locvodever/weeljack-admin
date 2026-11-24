@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideWeeljack } from 'weeljack-ng';
 import { WjButtonHarness } from 'weeljack-ng/button/testing';
 import { WjDialogHarness } from 'weeljack-ng/dialog/testing';
+import { WjFieldHarness } from 'weeljack-ng/field/testing';
 import { WjInputTextHarness } from 'weeljack-ng/inputtext/testing';
 import { wjPolice } from 'weeljack-ng/preset-police';
 import { WjRadioButtonHarness } from 'weeljack-ng/radiobutton/testing';
@@ -74,8 +75,9 @@ describe('TicketDialog', () => {
 
   it('emits the trimmed draft on a valid Save and closes', async () => {
     const { fixture, dialog, saved } = await open(null);
-    const [subject] = await dialog.getAllHarnesses(WjInputTextHarness);
+    const [subject, requester] = await dialog.getAllHarnesses(WjInputTextHarness);
     await subject?.setValue('  Mouse stuck  ');
+    await requester?.setValue('  Ada Example  ');
     await (await dialog.getHarness(WjRadioButtonHarness.with({ label: 'Urgent' }))).check();
 
     await (await dialog.getHarness(WjButtonHarness.with({ label: 'Save' }))).click();
@@ -85,7 +87,7 @@ describe('TicketDialog', () => {
       {
         subject: 'Mouse stuck',
         description: '',
-        requester: '',
+        requester: 'Ada Example',
         priority: 'urgent',
         status: 'open',
         assignee: 'Mara Okafor',
@@ -96,14 +98,52 @@ describe('TicketDialog', () => {
 
   it('refuses a blank subject and emits nothing', async () => {
     const { fixture, dialog, saved } = await open(null);
-    const [subject] = await dialog.getAllHarnesses(WjInputTextHarness);
+    const [subject, requester] = await dialog.getAllHarnesses(WjInputTextHarness);
     await subject?.setValue('   ');
+    await requester?.setValue('Ada Example');
 
     await (await dialog.getHarness(WjButtonHarness.with({ label: 'Save' }))).click();
     await fixture.whenStable();
 
     expect(saved).toEqual([]);
     expect(fixture.componentInstance.visible()).toBe(true);
+  });
+
+  it('refuses a blank requester: says so, marks it invalid and focuses it', async () => {
+    const { fixture, dialog, saved } = await open(null);
+    const [subject, requester] = await dialog.getAllHarnesses(WjInputTextHarness);
+    await subject?.setValue('Mouse stuck');
+    await requester?.setValue('   ');
+
+    await (await dialog.getHarness(WjButtonHarness.with({ label: 'Save' }))).click();
+    await fixture.whenStable();
+
+    expect(saved).toEqual([]);
+    expect(fixture.componentInstance.visible()).toBe(true);
+    const field = await dialog.getHarness(WjFieldHarness.with({ label: 'Requester' }));
+    expect(await field.getError()).toBe('Enter a requester');
+    expect(await requester?.isInvalid()).toBe(true);
+    expect(await requester?.isFocused()).toBe(true);
+    expect(await subject?.isInvalid()).toBe(false);
+  });
+
+  it('focuses the subject first when both required fields are blank', async () => {
+    const { fixture, dialog } = await open(null);
+    const [subject, requester] = await dialog.getAllHarnesses(WjInputTextHarness);
+
+    await (await dialog.getHarness(WjButtonHarness.with({ label: 'Save' }))).click();
+    await fixture.whenStable();
+
+    expect(await subject?.isInvalid()).toBe(true);
+    expect(await requester?.isInvalid()).toBe(true);
+    expect(await subject?.isFocused()).toBe(true);
+    const errors = await Promise.all(
+      (await dialog.getAllHarnesses(WjFieldHarness)).map((field) => field.getError()),
+    );
+    expect(errors.filter((error) => error !== null && error !== '')).toEqual([
+      'Enter a subject',
+      'Enter a requester',
+    ]);
   });
 
   it('closes on Escape without saving', async () => {

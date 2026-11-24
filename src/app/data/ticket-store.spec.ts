@@ -21,7 +21,18 @@ describe('TicketStore', () => {
     expect(store.all()).toEqual(TestBed.inject(TicketService).all);
   });
 
-  it('creates a ticket under the next free id, dated at the demo anchor', () => {
+  it('never reuses an id: deleting the highest tickets does not lower the next one', () => {
+    const store = TestBed.inject(TicketStore);
+
+    expect(store.remove(['WJ-1030', 'WJ-1031', 'WJ-1032'])).toBe(3);
+    const created = store.create(DRAFT);
+    expect(created.id).toBe('WJ-1033');
+
+    store.remove([created.id]);
+    expect(store.create(DRAFT).id).toBe('WJ-1034');
+  });
+
+  it('creates a ticket under the next id, dated at the demo anchor', () => {
     const store = TestBed.inject(TicketStore);
     const before = store.all().length;
 

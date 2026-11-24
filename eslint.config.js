@@ -20,7 +20,8 @@ const nodeGlobals = {
 };
 
 export default defineConfig([
-  globalIgnores(['dist/', '.angular/', 'coverage/', 'node_modules/', 'out-tsc/']),
+  // `.worktrees/` holds other checkouts of this repo; linting them from here mixes two tsconfig roots.
+  globalIgnores(['dist/', '.angular/', 'coverage/', 'node_modules/', 'out-tsc/', '.worktrees/']),
   {
     files: ['src/**/*.ts'],
     extends: [tseslint.configs.recommended, angular.configs.tsRecommended],

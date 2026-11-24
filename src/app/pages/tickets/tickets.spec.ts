@@ -170,8 +170,9 @@ describe('Tickets page', () => {
     await fixture.whenStable();
     const dialog = await loader.getHarness(WjDialogHarness);
     expect(await dialog.getTitle()).toBe('New ticket');
-    const subject = (await dialog.getAllHarnesses(WjInputTextHarness))[0];
+    const [subject, requester] = await dialog.getAllHarnesses(WjInputTextHarness);
     await subject?.setValue('Badge reader offline');
+    await requester?.setValue('Ada Example');
     await (await dialog.getHarness(WjButtonHarness.with({ label: 'Save' }))).click();
     await fixture.whenStable();
 

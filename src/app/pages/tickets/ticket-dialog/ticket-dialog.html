@@ -21,9 +21,11 @@
       ></textarea>
     </wj-field>
 
-    <wj-field label="Requester">
+    <wj-field label="Requester" hint="Who asked for help." [error]="requesterError()">
       <input
+        #requesterInput
         wjInputText
+        required
         autocomplete="off"
         [ngModel]="requester()"
         (ngModelChange)="requester.set($event)"

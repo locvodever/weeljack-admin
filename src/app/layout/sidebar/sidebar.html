@@ -19,7 +19,7 @@
               <a
                 [routerLink]="link.path"
                 routerLinkActive
-                [routerLinkActiveOptions]="{ exact: true }"
+                [routerLinkActiveOptions]="activeOptions"
                 ariaCurrentWhenActive="page"
                 (click)="linkClick.emit()"
               >
