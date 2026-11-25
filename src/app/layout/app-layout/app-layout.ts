@@ -12,7 +12,7 @@ import { Topbar } from '../topbar/topbar';
  * The shell has no heading: each page owns the only `h1`.
  */
 @Component({
-  selector: 'app-layout',
+  selector: 'wjt-layout',
   imports: [MenuDrawer, RouterOutlet, Sidebar, Topbar],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app-layout.html',

@@ -27,7 +27,7 @@ import { LandingTopbar } from './landing-topbar/landing-topbar';
  * skipped by the router, so a click on it is also handled here.
  */
 @Component({
-  selector: 'app-landing',
+  selector: 'wjt-landing',
   imports: [
     LandingTopbar,
     LandingHero,

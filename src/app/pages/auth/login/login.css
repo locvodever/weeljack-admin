@@ -12,6 +12,7 @@
 .wordmark {
   display: inline-flex;
   align-items: center;
+  gap: 8px;
   box-sizing: border-box;
   min-block-size: 44px;
   margin: 0 0 16px;

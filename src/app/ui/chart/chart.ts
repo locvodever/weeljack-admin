@@ -58,7 +58,7 @@ interface Palette {
  * Animation is off while the reader prefers reduced motion.
  */
 @Component({
-  selector: 'app-chart',
+  selector: 'wjt-chart',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './chart.html',
   styleUrl: './chart.css',

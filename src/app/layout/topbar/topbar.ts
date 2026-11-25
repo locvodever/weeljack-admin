@@ -20,6 +20,7 @@ import {
 } from 'weeljack-ng/icon';
 import { WjMenu } from 'weeljack-ng/menu';
 import type { Configurator } from '../configurator/configurator';
+import { Logo } from '../../ui/logo/logo';
 import { LayoutService } from '../layout.service';
 
 /**
@@ -28,8 +29,8 @@ import { LayoutService } from '../layout.service';
  * The configurator is mounted on the first click, so it stays out of the initial bundle.
  */
 @Component({
-  selector: 'app-topbar',
-  imports: [RouterLink, WjButton, WjIcon, WjMenu],
+  selector: 'wjt-topbar',
+  imports: [Logo, RouterLink, WjButton, WjIcon, WjMenu],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './topbar.html',
   styleUrl: './topbar.css',

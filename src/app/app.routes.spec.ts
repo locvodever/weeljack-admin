@@ -78,13 +78,13 @@ describe('routes', () => {
 
     await router.navigateByUrl('/empty');
     await fixture.whenStable();
-    expect(root.querySelector('app-layout')).not.toBeNull();
+    expect(root.querySelector('wjt-layout')).not.toBeNull();
     expect(root.querySelector('h1')?.textContent.trim()).toBe('Empty page');
 
     await router.navigateByUrl('/auth/access');
     await fixture.whenStable();
-    expect(root.querySelector('app-layout')).toBeNull();
-    expect(root.querySelector('app-full-page main')).not.toBeNull();
+    expect(root.querySelector('wjt-layout')).toBeNull();
+    expect(root.querySelector('wjt-full-page main')).not.toBeNull();
     expect(root.querySelector('h1')?.textContent.trim()).toBe('Access denied');
     fixture.destroy();
   });
@@ -96,7 +96,7 @@ describe('routes', () => {
 
     const root = fixture.nativeElement as HTMLElement;
     expect(root.querySelector('h1')?.textContent.trim()).toBe('A calm service desk for busy teams');
-    expect(root.querySelector('app-landing')).not.toBeNull();
+    expect(root.querySelector('wjt-landing')).not.toBeNull();
     expect(TestBed.inject(Title).getTitle()).toBe('Landing - weeljack-admin');
     fixture.destroy();
   });

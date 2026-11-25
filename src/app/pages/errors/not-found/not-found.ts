@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
  * `/notfound` is also copied to `404.html`, which GitHub Pages serves for any unknown address.
  */
 @Component({
-  selector: 'app-not-found',
+  selector: 'wjt-not-found',
   imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './not-found.html',

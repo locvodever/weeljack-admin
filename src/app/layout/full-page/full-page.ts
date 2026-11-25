@@ -9,7 +9,7 @@ import { LayoutService } from '../layout.service';
  * `afterNextRender`, which makes a full page open in the same look as the shell.
  */
 @Component({
-  selector: 'app-full-page',
+  selector: 'wjt-full-page',
   imports: [RouterOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './full-page.html',

@@ -19,7 +19,7 @@ interface Feature {
 
 /** `#features`: six cards, each describing something the demo really does. */
 @Component({
-  selector: 'app-landing-features',
+  selector: 'wjt-landing-features',
   imports: [WjCard, WjCardTitleSlot, WjIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-features.html',

@@ -28,6 +28,15 @@ export default defineConfig([
     processor: angular.processInlineTemplates,
     rules: {
       '@angular-eslint/prefer-on-push-component-change-detection': 'error',
+      // Template components use `wjt-` (WeeljackNg template); `wj-` belongs to the library.
+      '@angular-eslint/component-selector': [
+        'error',
+        { type: 'element', prefix: 'wjt', style: 'kebab-case' },
+      ],
+      '@angular-eslint/directive-selector': [
+        'error',
+        { type: 'attribute', prefix: 'wjt', style: 'camelCase' },
+      ],
       'no-restricted-imports': [
         'error',
         {

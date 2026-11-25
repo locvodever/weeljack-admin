@@ -12,7 +12,7 @@ import { PRIORITY_SEVERITY, STATUS_SEVERITY } from '../../../data/ticket-tags';
  * text says what the colour means.
  */
 @Component({
-  selector: 'app-recent-tickets',
+  selector: 'wjt-recent-tickets',
   imports: [RouterLink, WjAvatar, WjColumn, WjTable, WjTableCellSlot, WjTag],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'card' },

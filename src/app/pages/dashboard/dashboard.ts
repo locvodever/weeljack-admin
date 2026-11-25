@@ -14,7 +14,7 @@ import { StatusChart } from './status-chart/status-chart';
  * data from the root services and hands it to presentational widgets.
  */
 @Component({
-  selector: 'app-dashboard',
+  selector: 'wjt-dashboard',
   imports: [ActivityFeed, AgentWorkloadList, RecentTickets, StatCards, StatusChart],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard.html',

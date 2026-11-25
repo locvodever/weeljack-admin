@@ -4,7 +4,7 @@ import { ErrorState } from '../error-state/error-state';
 
 /** `/auth/error`: a generic "something went wrong" page with one way back. */
 @Component({
-  selector: 'app-error',
+  selector: 'wjt-error',
   imports: [ErrorState, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './error.html',

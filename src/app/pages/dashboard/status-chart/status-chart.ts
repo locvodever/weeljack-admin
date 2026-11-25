@@ -21,7 +21,7 @@ const STATUS_COLOR: Readonly<Record<TicketStatus, string>> = {
  * shows it; it is also what the chart's canvas points at as its description.
  */
 @Component({
-  selector: 'app-status-chart',
+  selector: 'wjt-status-chart',
   imports: [AppChart, WjButton, WjIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'card' },

@@ -10,12 +10,12 @@ import { Sidebar } from '../sidebar/sidebar';
  * the initial bundle.
  */
 @Component({
-  selector: 'app-menu-drawer',
+  selector: 'wjt-menu-drawer',
   imports: [Sidebar, WjDrawer],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <wj-drawer [(visible)]="layout.drawerOpen" header="Menu" position="left">
-      <app-sidebar id="drawer-nav" idPrefix="drawer" (linkClick)="layout.closeDrawer()" />
+      <wjt-sidebar id="drawer-nav" idPrefix="drawer" (linkClick)="layout.closeDrawer()" />
     </wj-drawer>
   `,
 })

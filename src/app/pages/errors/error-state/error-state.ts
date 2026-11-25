@@ -6,7 +6,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
  * projected actions.
  */
 @Component({
-  selector: 'app-error-state',
+  selector: 'wjt-error-state',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './error-state.html',
   styleUrl: './error-state.css',
