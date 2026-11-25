@@ -15,6 +15,7 @@
 .wordmark {
   display: inline-flex;
   align-items: center;
+  gap: 8px;
   min-block-size: 44px;
   color: var(--wj-primary-color);
   font-size: 1.125rem;

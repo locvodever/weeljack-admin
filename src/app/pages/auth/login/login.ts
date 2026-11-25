@@ -14,6 +14,7 @@ import { WjCheckbox } from 'weeljack-ng/checkbox';
 import { WjField } from 'weeljack-ng/field';
 import { WjInputText } from 'weeljack-ng/inputtext';
 import { WjPassword } from 'weeljack-ng/password';
+import { Logo } from '../../../ui/logo/logo';
 
 /** A plain `name@domain.tld` shape check: enough to show the pattern, it validates nothing real. */
 const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,7 +26,7 @@ const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  */
 @Component({
   selector: 'wjt-login',
-  imports: [FormsModule, RouterLink, WjButton, WjCheckbox, WjField, WjInputText, WjPassword],
+  imports: [FormsModule, Logo, RouterLink, WjButton, WjCheckbox, WjField, WjInputText, WjPassword],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './login.html',
   styleUrl: './login.css',

@@ -28,6 +28,7 @@
 }
 
 .wordmark {
+  gap: 8px;
   color: var(--wj-primary-color);
   font-size: 1.125rem;
   font-weight: 700;
