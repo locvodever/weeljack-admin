@@ -23,7 +23,7 @@ describe('FullPage', () => {
 
     const root = fixture.nativeElement as HTMLElement;
     expect(root.querySelectorAll('main').length).toBe(1);
-    expect(root.querySelector('header, app-sidebar, app-topbar, footer')).toBeNull();
+    expect(root.querySelector('header, wjt-sidebar, wjt-topbar, footer')).toBeNull();
     fixture.destroy();
   });
 

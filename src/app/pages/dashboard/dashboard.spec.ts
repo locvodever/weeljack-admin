@@ -26,7 +26,7 @@ describe('Dashboard page', () => {
     expect(h1.length).toBe(1);
     expect(h1[0]?.textContent.trim()).toBe('Dashboard');
     expect(TestBed.inject(Title).getTitle()).toBe('Dashboard - weeljack-admin');
-    const h2 = Array.from(root.querySelectorAll('app-dashboard h2')).map((h) =>
+    const h2 = Array.from(root.querySelectorAll('wjt-dashboard h2')).map((h) =>
       h.textContent.trim(),
     );
     expect(h2).toEqual([

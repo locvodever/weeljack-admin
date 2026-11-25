@@ -7,7 +7,7 @@ import type { ActivityGroup } from '../../../data/models';
  * heading over a list; the time of an item is given relative to the demo's fixed "now".
  */
 @Component({
-  selector: 'app-activity-feed',
+  selector: 'wjt-activity-feed',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'card' },
   templateUrl: './activity-feed.html',

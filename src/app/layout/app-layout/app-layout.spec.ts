@@ -61,10 +61,10 @@ describe('AppLayout', () => {
   it('docks the sidebar in Static mode, and the menu toggle collapses it', async () => {
     const { fixture, root, layout } = await render(true);
 
-    expect(root.querySelector('app-sidebar#docked-nav')).not.toBeNull();
+    expect(root.querySelector('wjt-sidebar#docked-nav')).not.toBeNull();
     layout.toggleMenu();
     await fixture.whenStable();
-    expect(root.querySelector('app-sidebar#docked-nav')).toBeNull();
+    expect(root.querySelector('wjt-sidebar#docked-nav')).toBeNull();
     expect(layout.drawerOpen()).toBe(false);
     fixture.destroy();
   });
@@ -74,7 +74,7 @@ describe('AppLayout', () => {
     layout.setMenuMode('overlay');
     await fixture.whenStable();
 
-    expect(root.querySelector('app-sidebar#docked-nav')).toBeNull();
+    expect(root.querySelector('wjt-sidebar#docked-nav')).toBeNull();
     expect(document.querySelector('[role="dialog"]')).toBeNull();
     layout.toggleMenu();
     await fixture.whenStable();

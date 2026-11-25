@@ -7,7 +7,7 @@ import type { Stat } from '../../../data/models';
  * words. The section is named for assistive technology only; the cards need no visible heading.
  */
 @Component({
-  selector: 'app-stat-cards',
+  selector: 'wjt-stat-cards',
   imports: [WjIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './stat-cards.html',

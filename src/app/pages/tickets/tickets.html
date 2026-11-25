@@ -2,7 +2,7 @@
 <p class="note">Changes stay in this tab and reset when you reload.</p>
 
 <section class="panel" aria-label="Tickets">
-  <app-tickets-toolbar
+  <wjt-tickets-toolbar
     [search]="search()"
     [selectedCount]="selection().length"
     (searchChange)="onSearch($event)"
@@ -10,7 +10,7 @@
     (removeSelected)="confirmRemove(selection())"
     (exportCsv)="exportCsv()"
   />
-  <app-tickets-table
+  <wjt-tickets-table
     [tickets]="rows()"
     [(selection)]="selection"
     [(sortField)]="sortField"
@@ -24,7 +24,7 @@
 
 <p class="sr-only" role="status">{{ matchCount() }}</p>
 
-<app-ticket-dialog
+<wjt-ticket-dialog
   [(visible)]="dialogOpen"
   [ticket]="editing()"
   (save)="onSave($event)"

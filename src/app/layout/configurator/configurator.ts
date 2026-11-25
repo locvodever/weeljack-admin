@@ -25,7 +25,7 @@ import {
  * it on the first click, so it stays out of the initial bundle.
  */
 @Component({
-  selector: 'app-configurator',
+  selector: 'wjt-configurator',
   imports: [WjPopover, WjSelectButton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './configurator.html',

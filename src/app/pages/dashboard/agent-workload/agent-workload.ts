@@ -17,7 +17,7 @@ interface Row {
  * open sets that button's `aria-expanded`.
  */
 @Component({
-  selector: 'app-agent-workload',
+  selector: 'wjt-agent-workload',
   imports: [WjButton, WjIcon, WjMenu, WjProgressBar],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'card' },

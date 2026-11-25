@@ -441,7 +441,7 @@ async function layoutRows(browser, origin) {
   await add('docked sidebar reaches the viewport bottom 1440x900', () =>
     layoutCheck(browser, origin, `${BASE}empty`, SIZES[0], async (page) => {
       const edge = await page.evaluate(() => {
-        const side = document.querySelector('app-sidebar.side');
+        const side = document.querySelector('wjt-sidebar.side');
         return {
           bottom: side?.getBoundingClientRect().bottom,
           viewport: innerHeight,
@@ -458,7 +458,7 @@ async function layoutRows(browser, origin) {
     layoutCheck(browser, origin, BASE, SIZES[0], async (page) => {
       // Each header is one word, so more than one line of text is a break inside a word.
       const { found, broken } = await page.evaluate(() => {
-        const cells = [...document.querySelectorAll('app-recent-tickets th')];
+        const cells = [...document.querySelectorAll('wjt-recent-tickets th')];
         // The tops of the text's own line boxes (not of the elements around it).
         const lines = (cell) => {
           const tops = new Set();

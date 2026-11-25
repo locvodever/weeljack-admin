@@ -28,7 +28,7 @@ import { LayoutService } from '../layout.service';
  * The configurator is mounted on the first click, so it stays out of the initial bundle.
  */
 @Component({
-  selector: 'app-topbar',
+  selector: 'wjt-topbar',
   imports: [RouterLink, WjButton, WjIcon, WjMenu],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './topbar.html',

@@ -12,7 +12,7 @@ interface Highlight {
 
 /** `#highlights`: two rows of text beside art, the same desk on a phone and on a desktop. */
 @Component({
-  selector: 'app-landing-highlights',
+  selector: 'wjt-landing-highlights',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-highlights.html',
   styleUrl: './landing-highlights.css',

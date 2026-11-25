@@ -38,7 +38,7 @@ const CSV_COLUMNS: readonly CsvColumn<Ticket>[] = [
  * the toast are hosted here, so their code stays in this lazy chunk.
  */
 @Component({
-  selector: 'app-tickets',
+  selector: 'wjt-tickets',
   imports: [TicketDialog, TicketsTable, TicketsToolbar, WjConfirmDialog, WjToast],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tickets.html',

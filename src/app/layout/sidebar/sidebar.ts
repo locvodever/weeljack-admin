@@ -24,7 +24,7 @@ import { NAV_GROUPS, NavGroup } from '../nav-data';
  * current route is open until the reader closes it. Groups without links are not rendered.
  */
 @Component({
-  selector: 'app-sidebar',
+  selector: 'wjt-sidebar',
   imports: [RouterLink, RouterLinkActive, WjIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './sidebar.html',

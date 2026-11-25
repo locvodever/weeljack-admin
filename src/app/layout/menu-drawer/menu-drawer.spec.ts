@@ -14,7 +14,7 @@ import { MenuDrawer } from './menu-drawer';
   imports: [MenuDrawer],
   template: `
     <button type="button" id="toggle" (click)="layout.openDrawer()">Menu</button>
-    <app-menu-drawer />
+    <wjt-menu-drawer />
   `,
 })
 class Host {

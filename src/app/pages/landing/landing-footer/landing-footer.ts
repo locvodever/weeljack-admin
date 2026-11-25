@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 
 /** The landing page's footer: link columns, "Built with WeeljackNg" and the MIT notice. */
 @Component({
-  selector: 'app-landing-footer',
+  selector: 'wjt-landing-footer',
   imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-footer.html',

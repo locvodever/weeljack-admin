@@ -11,7 +11,7 @@
       "projectType": "application",
       "root": "",
       "sourceRoot": "src",
-      "prefix": "app",
+      "prefix": "wjt",
       "schematics": {
         "@schematics/angular:component": {
           "changeDetection": "OnPush",
