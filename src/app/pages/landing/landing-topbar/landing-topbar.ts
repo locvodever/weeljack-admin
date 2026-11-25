@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { WjIcon, wjIconMenu, wjIconX } from 'weeljack-ng/icon';
+import { Logo } from '../../../ui/logo/logo';
 
 /**
  * The landing page's top bar: the wordmark, the three section links, Login and "View the
@@ -11,7 +12,7 @@ import { WjIcon, wjIconMenu, wjIconX } from 'weeljack-ng/icon';
  */
 @Component({
   selector: 'wjt-landing-topbar',
-  imports: [RouterLink, WjIcon],
+  imports: [Logo, RouterLink, WjIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-topbar.html',
   styleUrl: './landing-topbar.css',

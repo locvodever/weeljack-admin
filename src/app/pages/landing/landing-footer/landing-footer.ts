@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Logo } from '../../../ui/logo/logo';
 
 /** The landing page's footer: link columns, "Built with WeeljackNg" and the MIT notice. */
 @Component({
   selector: 'wjt-landing-footer',
-  imports: [RouterLink],
+  imports: [Logo, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-footer.html',
   styleUrl: './landing-footer.css',

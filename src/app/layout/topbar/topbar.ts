@@ -20,6 +20,7 @@ import {
 } from 'weeljack-ng/icon';
 import { WjMenu } from 'weeljack-ng/menu';
 import type { Configurator } from '../configurator/configurator';
+import { Logo } from '../../ui/logo/logo';
 import { LayoutService } from '../layout.service';
 
 /**
@@ -29,7 +30,7 @@ import { LayoutService } from '../layout.service';
  */
 @Component({
   selector: 'wjt-topbar',
-  imports: [RouterLink, WjButton, WjIcon, WjMenu],
+  imports: [Logo, RouterLink, WjButton, WjIcon, WjMenu],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './topbar.html',
   styleUrl: './topbar.css',
