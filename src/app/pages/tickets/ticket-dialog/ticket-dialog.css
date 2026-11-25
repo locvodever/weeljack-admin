@@ -1,0 +1,29 @@
+:host {
+  display: block;
+}
+
+/* One column of fields, about 36 rem wide; on a phone the viewport width less a margin. */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+  inline-size: min(36rem, calc(100vw - 4rem));
+}
+
+.radios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-block-size: 44px;
+}
+
+.radio label {
+  cursor: pointer;
+}

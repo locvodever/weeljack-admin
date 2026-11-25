@@ -1,0 +1,27 @@
+:host {
+  display: block;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+.note {
+  margin: 0 0 24px;
+  color: var(--wj-text-muted-color);
+}
+
+/* Toolbar, table and pager share one panel, like the dashboard's widgets. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-inline-size: 0;
+  padding: 16px;
+  border: 1px solid var(--wj-content-border-color);
+  border-radius: var(--wj-content-border-radius);
+  background: var(--wj-content-background);
+  color: var(--wj-text-color);
+}

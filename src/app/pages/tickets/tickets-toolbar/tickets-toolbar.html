@@ -1,0 +1,38 @@
+<wj-toolbar ariaLabel="Ticket actions">
+  <div class="tools">
+    <div class="actions">
+      <wj-button label="New" (click)="create.emit()">
+        <wj-icon class="icon" [icon]="icons.plus" />
+      </wj-button>
+      <wj-button
+        label="Delete selected"
+        severity="danger"
+        variant="outlined"
+        [disabled]="selectedCount() === 0"
+        (click)="removeSelected.emit()"
+      >
+        <wj-icon class="icon" [icon]="icons.trash" />
+      </wj-button>
+      <wj-button
+        label="Export CSV"
+        severity="secondary"
+        variant="outlined"
+        (click)="exportCsv.emit()"
+      >
+        <wj-icon class="icon" [icon]="icons.download" />
+      </wj-button>
+    </div>
+    <wj-iconfield class="search">
+      <wj-inputicon><wj-icon [icon]="icons.search" /></wj-inputicon>
+      <input
+        wjInputText
+        type="search"
+        aria-label="Search tickets"
+        placeholder="Search tickets"
+        autocomplete="off"
+        [value]="search()"
+        (input)="onSearch($event)"
+      />
+    </wj-iconfield>
+  </div>
+</wj-toolbar>

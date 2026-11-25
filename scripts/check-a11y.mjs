@@ -1,0 +1,630 @@
+// Audits every prerendered route with axe (WCAG 2.2 AA) at two sizes in light and dark (28 Q3), plus
+// what the pages open: the menu drawer open at 390 x 844, the configurator open at 1440 x 900, the
+// dashboard's first agent menu open at 1440 x 900, its chart's data table shown at both sizes and, on
+// the tickets page at both sizes, the New ticket dialog open, a row's delete confirm open and the
+// "deleted" toast on screen, and on the login page at both sizes the form with its errors shown and
+// with the password shown, and on the landing page at 390 x 844 the Menu folded open.
+// The landing page's section links are also checked by href: each topbar link must resolve to
+// .../weeljack-admin/landing#features, #highlights and #pricing in the browser, and the prerendered
+// landing/index.html must hold the same three hrefs (the JavaScript-off path).
+// Layout assertions count in the same total, so the gate fails on them too: on /tickets at 1440 x 900
+// (sidebar docked) the table has no horizontal overflow and the first row's Edit and Delete are in view;
+// at 390 x 844 exactly one element scrolls sideways, it is the focusable region named "Ticket list", the
+// first row's actions are in view and the pager does not overflow; on /empty at 1440 x 900 the docked
+// sidebar reaches the bottom of the viewport; on / at 1440 x 900 no recent-tickets header breaks inside
+// a word; and with the main bundle blocked the scheme-init script alone puts the dark class on <html>
+// for a dark OS on /, /tickets, /landing, /auth/login and the unknown URL, and leaves it off when the
+// stored scheme is light.
+// Serves dist/weeljack-admin/browser under /weeljack-admin/ with a built-in http server, so the audit
+// sees exactly what GitHub Pages serves: an unknown path is answered with status 404 and the body of
+// 404.html (the run fails when 404.html is missing). One unknown, nested URL is audited at both sizes
+// in both schemes: it must answer 404 and show the "Page not found" heading. Only that main
+// document's own 404 console message is tolerated there. Any violation, missing CSP tag, CSP
+// violation, other console error, request outside the local server, or empty route list fails the run.
+import AxeBuilder from '@axe-core/playwright';
+import { existsSync, readFileSync, statSync } from 'node:fs';
+import { createServer } from 'node:http';
+import { extname, join, normalize, resolve, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { chromium } from 'playwright';
+
+const BASE = '/weeljack-admin/';
+const ROOT = fileURLToPath(new URL('../dist/weeljack-admin/', import.meta.url));
+const SITE = join(ROOT, 'browser');
+const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
+const SIZES = [
+  { name: '1440x900', width: 1440, height: 900 },
+  { name: '390x844', width: 390, height: 844 },
+];
+const SCHEMES = ['light', 'dark'];
+// A nested address no route matches: Pages answers it with 404.html at any depth.
+const UNKNOWN_ROUTE = `${BASE}no/such/page`;
+
+// Opens an overlay and waits until it is visible and has stopped moving, so axe measures the settled
+// state. Each state runs on the routes in `routes` at one size, in both schemes.
+async function settle(page, dialog) {
+  await dialog.waitFor({ state: 'visible' });
+  await page.waitForFunction(() =>
+    document.getAnimations().every((a) => a.playState !== 'running' && a.playState !== 'pending'),
+  );
+}
+
+const LANDING = `${BASE}landing`;
+const LANDING_SECTIONS = ['features', 'highlights', 'pricing'];
+const TICKETS = `${BASE}tickets`;
+// The key LayoutService stores the layout under; scripts/scheme-init.test.mjs keeps it in step with the code.
+const LAYOUT_STORAGE_KEY = 'weeljack-admin:layout';
+
+const STATES = [
+  {
+    name: 'landing-menu-open',
+    size: SIZES[1],
+    routes: [LANDING],
+    async prepare(page) {
+      await page.getByRole('button', { name: 'Menu', exact: true }).click();
+      await settle(page, page.getByRole('navigation', { name: 'Sections' }));
+      await settle(page, page.locator('#landing-menu .actions'));
+    },
+  },
+  {
+    name: 'drawer-open',
+    size: SIZES[1],
+    routes: [BASE],
+    async prepare(page) {
+      await page.getByRole('button', { name: 'Menu', exact: true }).click();
+      await settle(page, page.getByRole('dialog', { name: 'Menu' }));
+    },
+  },
+  {
+    name: 'configurator-open',
+    size: SIZES[0],
+    routes: [BASE],
+    async prepare(page) {
+      await page.getByRole('button', { name: 'Theme settings' }).click();
+      await settle(page, page.getByRole('dialog', { name: 'Theme' }));
+    },
+  },
+  {
+    name: 'agent-menu-open',
+    size: SIZES[0],
+    routes: [BASE],
+    async prepare(page) {
+      await page
+        .getByRole('button', { name: /^Actions for / })
+        .first()
+        .click();
+      await settle(page, page.getByRole('menu', { name: /^Actions for / }));
+    },
+  },
+  ...SIZES.map((size) => ({
+    name: 'data-table-shown',
+    size,
+    routes: [BASE],
+    async prepare(page) {
+      await page.getByRole('button', { name: 'Show data table' }).click();
+      await settle(page, page.getByRole('table', { name: /Tickets by status/ }));
+    },
+  })),
+  ...SIZES.flatMap((size) => [
+    {
+      name: 'ticket-dialog-open',
+      size,
+      routes: [`${BASE}tickets`],
+      async prepare(page) {
+        await page.getByRole('button', { name: 'New', exact: true }).click();
+        await settle(page, page.getByRole('dialog', { name: 'New ticket' }));
+      },
+    },
+    {
+      name: 'delete-confirm-open',
+      size,
+      routes: [`${BASE}tickets`],
+      async prepare(page) {
+        await page.getByRole('button', { name: 'Delete ticket WJ-1032' }).click();
+        await settle(page, page.getByRole('alertdialog', { name: 'Delete tickets' }));
+      },
+    },
+    {
+      name: 'toast-shown',
+      size,
+      routes: [`${BASE}tickets`],
+      async prepare(page) {
+        await page.getByRole('button', { name: 'Delete ticket WJ-1032' }).click();
+        const confirm = page.getByRole('alertdialog', { name: 'Delete tickets' });
+        await settle(page, confirm);
+        await confirm.getByRole('button', { name: 'Delete', exact: true }).click();
+        const toast = page.getByText('Ticket WJ-1032 deleted');
+        await toast.waitFor({ state: 'visible' });
+        // A hovered toast keeps its place: pointing at it stops its 3 s timer, so axe sees it.
+        await toast.hover();
+        await settle(page, toast);
+      },
+    },
+  ]),
+  ...SIZES.flatMap((size) => [
+    {
+      name: 'login-errors-shown',
+      size,
+      routes: [`${BASE}auth/login`],
+      async prepare(page) {
+        await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+        await settle(page, page.getByText('Enter your email'));
+        await settle(page, page.getByText('Enter your password'));
+      },
+    },
+    {
+      name: 'password-shown',
+      size,
+      routes: [`${BASE}auth/login`],
+      async prepare(page) {
+        await page.getByRole('button', { name: 'Show Password' }).click();
+        await settle(page, page.getByRole('button', { name: 'Hide Password' }));
+      },
+    },
+  ]),
+];
+const TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.woff2': 'font/woff2',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
+};
+
+function loadRoutes() {
+  const file = join(ROOT, 'prerendered-routes.json');
+  if (!existsSync(file)) return [];
+  const { routes } = JSON.parse(readFileSync(file, 'utf8'));
+  // Keys carry the base href and no trailing slash: "/weeljack-admin" is the home route.
+  return Object.keys(routes ?? {}).map((route) => (route === BASE.slice(0, -1) ? BASE : route));
+}
+
+function resolveFile(urlPath) {
+  if (!urlPath.startsWith(BASE.slice(0, -1))) return undefined;
+  const relative = normalize(decodeURIComponent(urlPath.slice(BASE.length - 1)));
+  const target = resolve(SITE, `.${sep}${relative}`);
+  if (target !== SITE && !target.startsWith(SITE + sep)) return undefined;
+  const candidates = [target, join(target, 'index.html')];
+  return candidates.find((candidate) => existsSync(candidate) && statSync(candidate).isFile());
+}
+
+function startServer() {
+  const notFoundPage = join(SITE, '404.html');
+  const server = createServer((request, response) => {
+    const { pathname } = new URL(request.url ?? '/', 'http://localhost');
+    const file = resolveFile(pathname);
+    if (!file) {
+      // As GitHub Pages does: status 404 with the body of 404.html.
+      response.writeHead(404, { 'content-type': TYPES['.html'] }).end(readFileSync(notFoundPage));
+      return;
+    }
+    response.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' });
+    response.end(readFileSync(file));
+  });
+  return new Promise((resolvePromise, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => resolvePromise(server));
+  });
+}
+
+// `unknown` marks the unknown-URL audit: the document must answer 404 and show the not-found heading.
+async function audit(browser, origin, route, size, scheme, prepare, unknown = false) {
+  const context = await browser.newContext({
+    viewport: { width: size.width, height: size.height },
+    colorScheme: scheme,
+  });
+  try {
+    const page = await context.newPage();
+    const problems = [];
+    await page.addInitScript(() => {
+      globalThis.__cspViolations = [];
+      document.addEventListener('securitypolicyviolation', (event) => {
+        globalThis.__cspViolations.push(`${event.violatedDirective} ${event.blockedURI}`);
+      });
+    });
+    page.on('console', (message) => {
+      if (message.type() !== 'error') return;
+      // Chromium logs the main document's own 404 as a console error; nothing else is let through.
+      if (unknown && message.location().url === `${origin}${route}` && /404/.test(message.text())) {
+        return;
+      }
+      problems.push(`console error: ${message.text()}`);
+    });
+    page.on('pageerror', (error) => problems.push(`page error: ${error.message}`));
+    page.on('request', (request) => {
+      if (!request.url().startsWith(origin)) problems.push(`external request: ${request.url()}`);
+    });
+
+    const response = await page.goto(`${origin}${route}`, { waitUntil: 'load' });
+    await page.waitForLoadState('networkidle');
+
+    if (unknown) {
+      if (response?.status() !== 404) {
+        problems.push(`unknown URL answered ${response?.status()}, expected 404`);
+      }
+      const heading = page.getByRole('heading', { level: 1, name: 'Page not found' });
+      if (!(await heading.isVisible())) problems.push('"Page not found" heading is not visible');
+      if (new URL(page.url()).pathname !== route) {
+        problems.push(`the typed URL changed to ${new URL(page.url()).pathname}`);
+      }
+    }
+
+    if (prepare) {
+      try {
+        await prepare(page);
+      } catch (error) {
+        problems.push(`could not open the state: ${String(error.message).split(/\r?\n/, 1)[0]}`);
+      }
+    }
+
+    const csp = await page.locator('meta[http-equiv="Content-Security-Policy"]').count();
+    if (csp !== 1) problems.push(`CSP meta tag count is ${csp}, expected 1`);
+    const violations = await page.evaluate(() => globalThis.__cspViolations ?? []);
+    for (const violation of violations) problems.push(`CSP violation: ${violation}`);
+
+    const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+    const details = results.violations.map(
+      (violation) =>
+        `${violation.id} (${violation.impact}): ${violation.nodes.length} node(s), e.g. ${violation.nodes[0]?.target.join(' ')}`,
+    );
+    return {
+      count: results.violations.length + problems.length,
+      details: [...details, ...problems],
+    };
+  } finally {
+    await context.close();
+  }
+}
+
+// Each topbar section link must resolve to /weeljack-admin/landing#<id> (a bare #id would resolve to
+// the dashboard under the base href), in the live page and in the prerendered HTML.
+async function landingLinkProblems(browser, origin) {
+  const problems = [];
+  const context = await browser.newContext({
+    viewport: { width: SIZES[0].width, height: SIZES[0].height },
+  });
+  try {
+    const page = await context.newPage();
+    await page.goto(`${origin}${LANDING}`, { waitUntil: 'load' });
+    await page.waitForLoadState('networkidle');
+    const hrefs = await page
+      .getByRole('navigation', { name: 'Sections' })
+      .locator('a')
+      .evaluateAll((links) => links.map((link) => link.href));
+    if (hrefs.length !== LANDING_SECTIONS.length) {
+      problems.push(`expected ${LANDING_SECTIONS.length} section links, found ${hrefs.length}`);
+    }
+    LANDING_SECTIONS.forEach((id, index) => {
+      const expected = `${origin}${LANDING}#${id}`;
+      if (hrefs[index] !== expected) {
+        problems.push(
+          `section link ${index + 1} resolves to ${hrefs[index]}, expected ${expected}`,
+        );
+      }
+    });
+  } finally {
+    await context.close();
+  }
+  const file = join(SITE, 'landing', 'index.html');
+  const html = existsSync(file) ? readFileSync(file, 'utf8') : '';
+  for (const id of LANDING_SECTIONS) {
+    if (!html.includes(`href="${LANDING}#${id}"`)) {
+      problems.push(`prerendered landing/index.html has no href="${LANDING}#${id}"`);
+    }
+  }
+  return problems;
+}
+
+// Runs `check` on a fresh page of one route at one size and scheme and returns its problems. `block`
+// aborts the main bundle (so only what the HTML itself does is seen); `storedScheme` is written to
+// localStorage before any script runs. Console errors are not collected: an aborted bundle logs them.
+async function layoutCheck(browser, origin, route, size, check, options = {}) {
+  const context = await browser.newContext({
+    viewport: { width: size.width, height: size.height },
+    colorScheme: options.scheme ?? 'light',
+  });
+  try {
+    const page = await context.newPage();
+    if (options.block) await page.route('**/main-*.js', (request) => request.abort());
+    if (options.storedScheme) {
+      await page.addInitScript(
+        ([key, scheme]) => localStorage.setItem(key, JSON.stringify({ scheme })),
+        [LAYOUT_STORAGE_KEY, options.storedScheme],
+      );
+    }
+    await page.goto(`${origin}${route}`, { waitUntil: 'load' });
+    await page.waitForLoadState('networkidle');
+    return await check(page);
+  } catch (error) {
+    return [`could not run the check: ${String(error.message).split(/\r?\n/, 1)[0]}`];
+  } finally {
+    await context.close();
+  }
+}
+
+// Runs in the page: what scrolls sideways, and where the first row's actions and the pager are.
+function ticketsLayout() {
+  const named = document.querySelectorAll('[role="region"][aria-label="Ticket list"]');
+  const region = named[0];
+  const scrollers = [...document.querySelectorAll('body *')].filter((element) => {
+    const overflow = getComputedStyle(element).overflowX;
+    return (
+      (overflow === 'auto' || overflow === 'scroll') && element.scrollWidth > element.clientWidth
+    );
+  });
+  const box = (element) => {
+    const { left, right } = element.getBoundingClientRect();
+    return { left, right };
+  };
+  const pager = document.querySelector('p-paginator');
+  return {
+    viewport: innerWidth,
+    regions: named.length,
+    region: region && {
+      tabindex: region.getAttribute('tabindex'),
+      scrollWidth: region.scrollWidth,
+      clientWidth: region.clientWidth,
+      ...box(region),
+    },
+    scrollers: scrollers.map((element) => {
+      const name = element.getAttribute('aria-label');
+      return `${element.tagName.toLowerCase()}${name ? ` "${name}"` : ''}`;
+    }),
+    actions: [...document.querySelectorAll('tbody tr:first-child td button')].map((button) => ({
+      name: button.getAttribute('aria-label'),
+      ...box(button),
+    })),
+    pager: pager && {
+      scrollWidth: pager.scrollWidth,
+      clientWidth: pager.clientWidth,
+      ...box(pager),
+    },
+  };
+}
+
+function inside(item, outer) {
+  return item.left >= outer.left - 0.5 && item.right <= outer.right + 0.5;
+}
+
+function ticketsProblems(layout, { narrow }) {
+  if (layout.regions !== 1 || !layout.region) {
+    return [`expected one region named "Ticket list", found ${layout.regions}`];
+  }
+  const problems = [];
+  if (layout.region.tabindex !== '0') problems.push('the "Ticket list" region is not focusable');
+  if (layout.actions.length !== 2) {
+    problems.push(`expected 2 actions in the first row, found ${layout.actions.length}`);
+  }
+  const view = { left: 0, right: layout.viewport };
+  for (const action of layout.actions) {
+    if (!inside(action, view) || !inside(action, layout.region)) {
+      problems.push(`"${action.name}" is outside the viewport or the scroller`);
+    }
+  }
+  if (!narrow) {
+    if (layout.region.scrollWidth > layout.region.clientWidth) {
+      problems.push(
+        `the table scrolls sideways (${layout.region.scrollWidth} px needed, ${layout.region.clientWidth} px available)`,
+      );
+    }
+    return problems;
+  }
+  if (layout.scrollers.length !== 1 || !layout.scrollers[0].includes('"Ticket list"')) {
+    problems.push(
+      `expected only the "Ticket list" region to scroll sideways, found: ${layout.scrollers.join(', ') || 'nothing'}`,
+    );
+  }
+  if (!layout.pager) {
+    problems.push('the pager was not found');
+  } else if (layout.pager.scrollWidth > layout.pager.clientWidth || !inside(layout.pager, view)) {
+    problems.push('the pager overflows');
+  }
+  return problems;
+}
+
+// Layout rows as [name, problems]. Each row counts as one combination and its problems as violations.
+async function layoutRows(browser, origin) {
+  const rows = [];
+  const add = async (name, run) => rows.push([name, await run()]);
+
+  await add('tickets table fits 1440x900 docked', () =>
+    layoutCheck(browser, origin, TICKETS, SIZES[0], async (page) =>
+      ticketsProblems(await page.evaluate(ticketsLayout), { narrow: false }),
+    ),
+  );
+  await add('tickets one scroller 390x844', () =>
+    layoutCheck(browser, origin, TICKETS, SIZES[1], async (page) =>
+      ticketsProblems(await page.evaluate(ticketsLayout), { narrow: true }),
+    ),
+  );
+  await add('docked sidebar reaches the viewport bottom 1440x900', () =>
+    layoutCheck(browser, origin, `${BASE}empty`, SIZES[0], async (page) => {
+      const edge = await page.evaluate(() => {
+        const side = document.querySelector('app-sidebar.side');
+        return {
+          bottom: side?.getBoundingClientRect().bottom,
+          viewport: innerHeight,
+          shown: side !== null,
+        };
+      });
+      if (!edge.shown) return ['the docked sidebar is not on the page'];
+      return Math.abs(edge.bottom - edge.viewport) <= 1
+        ? []
+        : [`the sidebar ends at ${edge.bottom} px, the viewport at ${edge.viewport} px`];
+    }),
+  );
+  await add('recent tickets headers stay on one line 1440x900', () =>
+    layoutCheck(browser, origin, BASE, SIZES[0], async (page) => {
+      // Each header is one word, so more than one line of text is a break inside a word.
+      const { found, broken } = await page.evaluate(() => {
+        const cells = [...document.querySelectorAll('app-recent-tickets th')];
+        // The tops of the text's own line boxes (not of the elements around it).
+        const lines = (cell) => {
+          const tops = new Set();
+          const walker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT);
+          for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            if (!node.textContent.trim()) continue;
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            for (const rect of range.getClientRects()) tops.add(Math.round(rect.top));
+          }
+          return tops.size;
+        };
+        return {
+          found: cells.length,
+          broken: cells.filter((cell) => lines(cell) > 1).map((cell) => cell.textContent.trim()),
+        };
+      });
+      if (found === 0) return ['no recent-tickets header cells were found'];
+      return broken.map((name) => `the "${name}" header breaks across lines`);
+    }),
+  );
+  // The scheme before the bundle: with it blocked, only scheme-init.js can set the class.
+  for (const route of [BASE, TICKETS, LANDING, `${BASE}auth/login`, UNKNOWN_ROUTE]) {
+    for (const [storedScheme, expectDark] of [
+      [undefined, true],
+      ['light', false],
+    ]) {
+      const label = storedScheme ? 'stored light, dark OS: light' : 'dark OS: dark';
+      await add(`first frame, bundle blocked, ${label} ${route}`, () =>
+        layoutCheck(
+          browser,
+          origin,
+          route,
+          SIZES[0],
+          async (page) => {
+            const dark = await page.evaluate(() =>
+              document.documentElement.classList.contains('wj-dark'),
+            );
+            return dark === expectDark
+              ? []
+              : [
+                  `<html> ${dark ? 'has' : 'lacks'} wj-dark, expected ${expectDark ? 'it' : 'none'}`,
+                ];
+          },
+          { block: true, scheme: 'dark', storedScheme },
+        ),
+      );
+    }
+  }
+  return rows;
+}
+
+async function main() {
+  const routes = loadRoutes();
+  if (routes.length === 0) {
+    console.error('check:a11y failed: no prerendered routes found. Run `npm run build` first.');
+    return 1;
+  }
+  if (!existsSync(join(SITE, '404.html'))) {
+    console.error('check:a11y failed: 404.html is missing. Run `npm run build` first.');
+    return 1;
+  }
+
+  const server = await startServer();
+  const { port } = server.address();
+  const origin = `http://127.0.0.1:${port}`;
+  const browser = await chromium.launch({ headless: true });
+  let total = 0;
+  let stateCount = 0;
+  let unknownCount = 0;
+  let linkRows = 0;
+  let layoutCount = 0;
+  const failures = [];
+  try {
+    for (const route of routes) {
+      for (const size of SIZES) {
+        for (const scheme of SCHEMES) {
+          const { count, details } = await audit(browser, origin, route, size, scheme);
+          total += count;
+          console.log(`${route}  ${size.name}  ${scheme}  violations: ${count}`);
+          for (const detail of details) failures.push(`${route} ${size.name} ${scheme}: ${detail}`);
+        }
+      }
+      for (const state of STATES.filter((item) => item.routes.includes(route))) {
+        for (const scheme of SCHEMES) {
+          const { count, details } = await audit(
+            browser,
+            origin,
+            route,
+            state.size,
+            scheme,
+            state.prepare,
+          );
+          total += count;
+          stateCount += 1;
+          console.log(
+            `${route}  ${state.size.name}  ${scheme}  ${state.name}  violations: ${count}`,
+          );
+          for (const detail of details) {
+            failures.push(`${route} ${state.size.name} ${scheme} ${state.name}: ${detail}`);
+          }
+        }
+      }
+    }
+    // The landing page's section links, by resolved href.
+    if (routes.includes(LANDING)) {
+      const problems = await landingLinkProblems(browser, origin);
+      total += problems.length;
+      linkRows += 1;
+      console.log(`${LANDING}  section link hrefs  violations: ${problems.length}`);
+      for (const problem of problems) failures.push(`${LANDING} section links: ${problem}`);
+    } else {
+      total += 1;
+      failures.push(`${LANDING} is not in the prerendered routes`);
+    }
+    // The unknown URL, served the way Pages serves it.
+    for (const size of SIZES) {
+      for (const scheme of SCHEMES) {
+        const { count, details } = await audit(
+          browser,
+          origin,
+          UNKNOWN_ROUTE,
+          size,
+          scheme,
+          undefined,
+          true,
+        );
+        total += count;
+        unknownCount += 1;
+        console.log(
+          `${UNKNOWN_ROUTE}  ${size.name}  ${scheme}  unknown URL (404)  violations: ${count}`,
+        );
+        for (const detail of details) {
+          failures.push(`${UNKNOWN_ROUTE} ${size.name} ${scheme} unknown URL: ${detail}`);
+        }
+      }
+    }
+    // Layout assertions: fit, one scroller, the sidebar's height, header wrapping, the first frame's scheme.
+    for (const [name, problems] of await layoutRows(browser, origin)) {
+      total += problems.length;
+      layoutCount += 1;
+      console.log(`${name}  violations: ${problems.length}`);
+      for (const problem of problems) failures.push(`layout ${name}: ${problem}`);
+    }
+  } finally {
+    await browser.close();
+    await new Promise((done) => server.close(done));
+  }
+
+  const combinations =
+    routes.length * SIZES.length * SCHEMES.length +
+    stateCount +
+    unknownCount +
+    linkRows +
+    layoutCount;
+  console.log(
+    `check:a11y: ${routes.length} route(s), ${combinations} combination(s) (${stateCount} overlay state(s), ${unknownCount} unknown-URL row(s), ${linkRows} landing link row(s), ${layoutCount} layout row(s)), ${total} violation(s) in total`,
+  );
+  for (const failure of failures) console.error(`  ${failure}`);
+  return total === 0 ? 0 : 1;
+}
+
+main().then(
+  (code) => process.exit(code),
+  (error) => {
+    console.error(error);
+    process.exit(1);
+  },
+);

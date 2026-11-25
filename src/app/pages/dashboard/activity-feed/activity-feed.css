@@ -1,0 +1,52 @@
+:host {
+  display: block;
+  min-inline-size: 0;
+}
+
+.group {
+  margin: 16px 0 8px;
+  color: var(--wj-text-muted-color);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.widget-title + .group {
+  margin-block-start: 0;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  gap: 12px;
+}
+
+.icon {
+  flex: none;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  margin-block-start: 2px;
+  color: var(--wj-text-muted-color);
+}
+
+.body {
+  min-inline-size: 0;
+}
+
+p {
+  margin: 0;
+}
+
+.time {
+  color: var(--wj-text-muted-color);
+  font-size: 0.875rem;
+}

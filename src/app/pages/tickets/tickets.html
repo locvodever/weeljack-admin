@@ -1,0 +1,34 @@
+<h1>Tickets</h1>
+<p class="note">Changes stay in this tab and reset when you reload.</p>
+
+<section class="panel" aria-label="Tickets">
+  <app-tickets-toolbar
+    [search]="search()"
+    [selectedCount]="selection().length"
+    (searchChange)="onSearch($event)"
+    (create)="openCreate()"
+    (removeSelected)="confirmRemove(selection())"
+    (exportCsv)="exportCsv()"
+  />
+  <app-tickets-table
+    [tickets]="rows()"
+    [(selection)]="selection"
+    [(sortField)]="sortField"
+    [(sortOrder)]="sortOrder"
+    [(first)]="first"
+    [(rows)]="pageSize"
+    (edit)="openEdit($event)"
+    (remove)="confirmRemove([$event])"
+  />
+</section>
+
+<p class="sr-only" role="status">{{ matchCount() }}</p>
+
+<app-ticket-dialog
+  [(visible)]="dialogOpen"
+  [ticket]="editing()"
+  (save)="onSave($event)"
+  (closed)="onDialogClosed()"
+/>
+<wj-confirmdialog />
+<wj-toast />

@@ -1,0 +1,87 @@
+:host {
+  display: block;
+}
+
+.band {
+  border-block: 1px solid var(--wj-content-border-color);
+  background: var(--wj-content-background);
+  outline: none;
+}
+
+.inner {
+  box-sizing: border-box;
+  max-inline-size: 72rem;
+  margin-inline: auto;
+  padding: 48px 16px;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.intro {
+  margin: 0 0 32px;
+  color: var(--wj-text-muted-color);
+}
+
+.cards {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.cards li {
+  display: flex;
+}
+
+.cards wj-card {
+  display: block;
+  inline-size: 100%;
+}
+
+.tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 40px;
+  block-size: 40px;
+  margin-block-end: 12px;
+  border-radius: var(--wj-content-border-radius);
+  background: color-mix(in srgb, var(--wj-primary-color) 14%, var(--wj-content-background));
+  color: var(--wj-primary-color);
+  font-size: 1.25rem;
+}
+
+h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.text {
+  margin: 0;
+  color: var(--wj-text-muted-color);
+}
+
+@media (min-width: 720px) {
+  .inner {
+    padding: 64px 24px;
+  }
+
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

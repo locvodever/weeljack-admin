@@ -1,0 +1,72 @@
+:host {
+  display: block;
+  min-inline-size: 0;
+}
+
+/*
+ * The page breaks long words anywhere; in a table that splits headers letter by letter, so cells wrap at
+ * spaces only. Columns are sized from their content by the browser's auto table layout.
+ */
+wj-table {
+  display: block;
+  overflow-wrap: normal;
+}
+
+/*
+ * The Actions column is frozen, which makes the library's own table container the one sideways scroller
+ * (the pager sits outside it). weeljack-ng names that container and makes it focusable (`role="region"`,
+ * `aria-label` from the table's `ariaLabel`); this gives it the focus ring. Library-internal: the
+ * `[role="region"]` element the table renders around its `<table>`.
+ */
+wj-table ::ng-deep [role='region']:focus-visible {
+  outline: var(--wj-focus-ring-width) var(--wj-focus-ring-style) var(--wj-focus-ring-color);
+  outline-offset: var(--wj-focus-ring-offset);
+}
+
+/*
+ * A frozen cell sticks to the inline end; it needs an opaque background and an edge. Library-internal:
+ * `.p-datatable-frozen-column` is the class weeljack-ng's table puts on a frozen column's cells.
+ */
+wj-table ::ng-deep td.p-datatable-frozen-column,
+wj-table ::ng-deep th.p-datatable-frozen-column {
+  border-inline-start: 1px solid var(--wj-content-border-color);
+}
+
+wj-tag {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.ticket-id {
+  color: var(--wj-primary-color);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.updated {
+  color: var(--wj-text-muted-color);
+  white-space: nowrap;
+}
+
+/*
+ * Subject takes the width the other columns leave: its cell asks for 100% (every other column then shrinks
+ * to its content) and the text inside is cut with an ellipsis; its full text stays in the cell for assistive
+ * technology. Library-internal: the `td` weeljack-ng renders around the cell template.
+ */
+wj-table ::ng-deep td:has(> .subject) {
+  inline-size: 100%;
+}
+
+.subject {
+  display: block;
+  min-inline-size: 8rem;
+  contain: inline-size;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+}

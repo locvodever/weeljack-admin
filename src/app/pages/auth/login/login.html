@@ -1,0 +1,41 @@
+<div class="page-panel">
+  <a class="wordmark" routerLink="/">weeljack-admin</a>
+  <h1>Sign in</h1>
+  <p class="notice">
+    Demo only: any email address and password will sign you in. Nothing is sent or stored.
+  </p>
+
+  <form novalidate (submit)="submit($event)">
+    <wj-field label="Email" [error]="emailError()">
+      <input
+        #emailInput
+        wjInputText
+        type="email"
+        autocomplete="username"
+        required
+        [ngModel]="email()"
+        (ngModelChange)="email.set($event)"
+        name="email"
+      />
+    </wj-field>
+
+    <wj-field label="Password" [error]="passwordError()">
+      <wj-password
+        #passwordInput
+        autocomplete="current-password"
+        required
+        toggleMask
+        [ngModel]="password()"
+        (ngModelChange)="password.set($event)"
+        name="password"
+      />
+    </wj-field>
+
+    <div class="remember">
+      <wj-checkbox inputId="login-remember" [(checked)]="remember" />
+      <label for="login-remember">Remember me</label>
+    </div>
+
+    <wj-button class="block-button" type="submit" label="Sign in" />
+  </form>
+</div>

@@ -1,0 +1,46 @@
+:host {
+  display: block;
+  min-inline-size: 0;
+}
+
+.actions {
+  margin-block: 16px;
+}
+
+.data {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+caption {
+  padding-block-end: 8px;
+  color: var(--wj-text-muted-color);
+  text-align: start;
+}
+
+th,
+td {
+  padding: 8px 4px;
+  border-block-end: 1px solid var(--wj-content-border-color);
+  text-align: end;
+}
+
+th:first-child {
+  text-align: start;
+}
+
+thead th {
+  font-weight: 600;
+}
+
+tbody th {
+  font-weight: 400;
+}
+
+@media (min-width: 720px) {
+  th,
+  td {
+    padding-inline: 12px;
+  }
+}

@@ -1,0 +1,91 @@
+:host {
+  display: block;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.groups {
+  padding: 16px 8px;
+}
+
+.links {
+  margin-block-end: 8px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding: 4px 12px;
+  border: 0;
+  border-radius: var(--wj-button-border-radius);
+  background: transparent;
+  color: var(--wj-text-color);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+}
+
+.head:hover {
+  background: var(--wj-content-hover-background);
+}
+
+.chevron {
+  flex: none;
+  inline-size: 6px;
+  block-size: 6px;
+  margin-inline-start: 8px;
+  border-inline-end: 2px solid currentcolor;
+  border-block-end: 2px solid currentcolor;
+  transform: rotate(-45deg);
+  transition: transform var(--shell-motion) ease-out;
+}
+
+[aria-expanded='true'] > .chevron {
+  transform: rotate(45deg);
+}
+
+a {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-block-size: 44px;
+  padding: 4px 12px 4px 16px;
+  border-inline-start: 2px solid transparent;
+  border-radius: var(--wj-button-border-radius);
+  color: var(--wj-text-color);
+  font-size: 0.9375rem;
+  text-decoration: none;
+}
+
+.nav-icon {
+  flex: none;
+  margin-inline-end: 12px;
+  font-size: 1.25rem;
+}
+
+a:hover {
+  background: var(--wj-content-hover-background);
+}
+
+/* The current page is a bar and a heavier weight as well as a tint, never colour alone. */
+a[aria-current='page'] {
+  border-inline-start-color: var(--wj-primary-color);
+  background: var(--wj-content-hover-background);
+  font-weight: 700;
+}
+
+.head:focus-visible,
+a:focus-visible {
+  outline: var(--wj-focus-ring-width) var(--wj-focus-ring-style) var(--wj-focus-ring-color);
+  outline-offset: var(--wj-focus-ring-offset);
+}

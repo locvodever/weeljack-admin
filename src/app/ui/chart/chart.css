@@ -1,0 +1,6 @@
+/* Chart.js sizes the canvas to its container, so the host needs a height of its own. */
+:host {
+  display: block;
+  position: relative;
+  block-size: 18rem;
+}

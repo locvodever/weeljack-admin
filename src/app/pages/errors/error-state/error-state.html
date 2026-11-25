@@ -1,0 +1,8 @@
+<div class="page-panel">
+  <img [src]="art()" [alt]="alt()" width="240" height="160" />
+  <h1>{{ heading() }}</h1>
+  <p class="text">{{ text() }}</p>
+  <div class="actions">
+    <ng-content />
+  </div>
+</div>
