@@ -10,7 +10,7 @@ import { WjIcon, wjIconMenu, wjIconX } from 'weeljack-ng/icon';
  * `<base href>` a bare fragment would resolve to the dashboard.
  */
 @Component({
-  selector: 'app-landing-topbar',
+  selector: 'wjt-landing-topbar',
   imports: [RouterLink, WjIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-topbar.html',

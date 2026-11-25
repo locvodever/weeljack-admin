@@ -11,7 +11,7 @@ import { WjToolbar } from 'weeljack-ng/toolbar';
  * Export CSV and the global search. It holds no state of its own; the page decides what each does.
  */
 @Component({
-  selector: 'app-tickets-toolbar',
+  selector: 'wjt-tickets-toolbar',
   imports: [WjButton, WjIcon, WjIconField, WjInputIcon, WjInputText, WjToolbar],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tickets-toolbar.html',

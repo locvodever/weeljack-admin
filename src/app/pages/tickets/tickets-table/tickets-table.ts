@@ -27,7 +27,7 @@ import { PRIORITY_SEVERITY, STATUS_SEVERITY } from '../../../data/ticket-tags';
  * panel is narrower than the columns. The pager sits outside that container and never moves sideways.
  */
 @Component({
-  selector: 'app-tickets-table',
+  selector: 'wjt-tickets-table',
   imports: [
     WjAvatar,
     WjButton,

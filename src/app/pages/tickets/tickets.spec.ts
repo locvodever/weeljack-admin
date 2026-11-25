@@ -96,7 +96,7 @@ describe('Tickets page', () => {
   it('names the toolbar actions and every row action', async () => {
     const { root } = await setup();
 
-    const labels = Array.from(root.querySelectorAll('app-tickets-toolbar button')).map((item) =>
+    const labels = Array.from(root.querySelectorAll('wjt-tickets-toolbar button')).map((item) =>
       item.textContent.trim(),
     );
     expect(labels).toEqual(['New', 'Delete selected', 'Export CSV']);

@@ -37,7 +37,7 @@ const RECOMMENDED_PT: WjCardPt = {
 
 /** `#pricing`: three made-up plans. Every action is a link into the app; nothing takes payment. */
 @Component({
-  selector: 'app-landing-pricing',
+  selector: 'wjt-landing-pricing',
   imports: [RouterLink, WjCard, WjCardFooterSlot, WjCardTitleSlot, WjIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-pricing.html',

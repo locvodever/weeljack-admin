@@ -1,10 +1,10 @@
 <a class="skip-link" href="#main" (click)="skipToMain($event)">Skip to content</a>
 <header class="header">
-  <app-topbar />
+  <wjt-topbar />
 </header>
 <div class="body" [class.docked]="layout.dockedVisible()">
   @if (layout.dockedVisible()) {
-    <app-sidebar id="docked-nav" class="side" idPrefix="docked" />
+    <wjt-sidebar id="docked-nav" class="side" idPrefix="docked" />
   }
   <main id="main" tabindex="-1">
     <router-outlet />
@@ -14,5 +14,5 @@
   <p>weeljack-admin is a free template released under the MIT licence.</p>
 </footer>
 @defer (when layout.drawerRequested()) {
-  <app-menu-drawer />
+  <wjt-menu-drawer />
 }

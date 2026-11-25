@@ -24,7 +24,7 @@ const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * the first Sign in, and focus moves to the first invalid field (Email before Password).
  */
 @Component({
-  selector: 'app-login',
+  selector: 'wjt-login',
   imports: [FormsModule, RouterLink, WjButton, WjCheckbox, WjField, WjInputText, WjPassword],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './login.html',

@@ -33,7 +33,7 @@ describe('Landing', () => {
     expect(root.querySelectorAll('main').length).toBe(1);
     expect(root.querySelectorAll('footer').length).toBe(1);
     expect(root.querySelector('main header, main footer')).toBeNull();
-    expect(root.querySelector('app-layout, app-full-page')).toBeNull();
+    expect(root.querySelector('wjt-layout, wjt-full-page')).toBeNull();
     fixture.destroy();
   });
 

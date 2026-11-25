@@ -41,7 +41,7 @@ const STATUSES: readonly TicketStatus[] = ['open', 'in-progress', 'waiting', 're
  * Escape close it without saving, and the dialog returns focus to the control that opened it.
  */
 @Component({
-  selector: 'app-ticket-dialog',
+  selector: 'wjt-ticket-dialog',
   imports: [
     FormsModule,
     WjButton,
